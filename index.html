@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מערכת סידור עבודה</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:linear-gradient(135deg,#1a365d,#2b6cb0);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  direction:rtl;padding:20px;
+}
+.wrap{text-align:center;max-width:480px;width:100%}
+.logo{font-size:52px;margin-bottom:16px}
+h1{color:white;font-size:26px;font-weight:800;margin-bottom:8px}
+p{color:rgba(255,255,255,.7);font-size:14px;margin-bottom:36px}
+.btn{
+  display:block;width:100%;padding:20px;
+  border-radius:14px;text-decoration:none;
+  font-size:17px;font-weight:800;font-family:inherit;
+  margin-bottom:14px;transition:.2s;border:none;cursor:pointer;
+}
+.btn-emp{background:white;color:#2b6cb0;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.btn-emp:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.25)}
+.sub{font-size:12px;opacity:.75;margin-top:6px;display:block;font-weight:400}
+
+/* Manager section */
+.mgr-section{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:14px;padding:20px;margin-bottom:14px}
+.mgr-section h3{color:white;font-size:15px;font-weight:700;margin-bottom:14px}
+.team-input-row{display:flex;gap:8px}
+.team-input{
+  flex:1;padding:12px 14px;border-radius:10px;border:none;
+  font-size:15px;font-family:inherit;direction:rtl;
+  background:rgba(255,255,255,.9);color:#2d3748;
+}
+.team-input:focus{outline:2px solid #63b3ed;background:white}
+.team-input::placeholder{color:#a0aec0}
+.btn-mgr-go{
+  padding:12px 18px;background:#2b6cb0;color:white;
+  border:none;border-radius:10px;font-size:14px;font-weight:800;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.btn-mgr-go:hover{background:#2c5282}
+.team-hint{color:rgba(255,255,255,.6);font-size:11px;margin-top:8px;text-align:right}
+.divider{color:rgba(255,255,255,.4);font-size:12px;margin:6px 0 14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">&#128203;</div>
+  <h1>מערכת סידור עבודה</h1>
+  <p>בחר את הכניסה המתאימה לך</p>
+
+  <!-- Employee -->
+  <a class="btn btn-emp" href="employee.html">
+    &#128100; אני עובד/ת
+    <span class="sub">מלא/י את הזמינות שלך לשבוע הקרוב</span>
+  </a>
+
+  <!-- Manager with team selection -->
+  <div class="mgr-section">
+    <h3>&#128274; כניסת מנהל</h3>
+    <div class="team-input-row">
+      <input class="team-input" type="text" id="team-input"
+        placeholder="שם הסניף / צוות שלך..."
+        onkeydown="if(event.key==='Enter') goToManager()">
+      <button class="btn-mgr-go" onclick="goToManager()">כניסה &#8592;</button>
+    </div>
+    <div class="team-hint">לדוגמה: tlv, haifa, צוות-א, north ...</div>
+    <div class="divider">— או —</div>
+    <a href="manager.html" style="color:rgba(255,255,255,.6);font-size:12px;text-decoration:underline">
+      כניסה ללא סניף (סניף יחיד)
+    </a>
+  </div>
+</div>
+
+<script>
+function goToManager() {
+  const team = document.getElementById('team-input').value.trim();
+  if (!team) { alert('הזן שם סניף'); return; }
+  window.location.href = 'manager.html?team=' + encodeURIComponent(team);
+}
+</script>
+</body>
+</html>
