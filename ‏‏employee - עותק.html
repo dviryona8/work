@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>טופס זמינות משמרות</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a365d; --blue:#2b6cb0; --slate:#2d3748;
+  --green:#276749; --red:#c53030; --gray:#718096;
+  --mint:#f0fff4; --amber:#fffbeb; --ice:#ebf4ff;
+  --dg:#48bb78; --da:#d69e2e; --dn:#4299e1;
+  --border:#e2e8f0;
+}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:#edf2f7; color:var(--slate);
+  direction:rtl; min-height:100vh; padding-bottom:50px;
+}
+.hdr{
+  background:linear-gradient(135deg,var(--navy),#2c5282);
+  color:white; padding:20px; text-align:center;
+}
+.hdr h1{font-size:22px; font-weight:800}
+.hdr p{font-size:13px; opacity:.75; margin-top:5px}
+.card{
+  background:white; border-radius:14px; padding:22px 24px;
+  margin:20px auto; max-width:820px;
+  box-shadow:0 2px 14px rgba(0,0,0,.09);
+}
+label{display:block; font-weight:700; font-size:13px; color:var(--slate); margin-bottom:7px}
+.hint{color:var(--gray); font-weight:400; font-size:11px}
+input[type=text]{
+  width:100%; padding:11px 13px;
+  border:1.5px solid var(--border); border-radius:9px;
+  font-size:15px; font-family:inherit; direction:rtl;
+  transition:.2s;
+}
+input[type=text]:focus{outline:none; border-color:var(--blue); box-shadow:0 0 0 3px #ebf4ff}
+textarea{
+  width:100%; padding:11px 13px;
+  border:1.5px solid var(--border); border-radius:9px;
+  font-size:13px; font-family:inherit; direction:rtl;
+  min-height:85px; resize:vertical;
+}
+textarea:focus{outline:none; border-color:var(--blue)}
+
+/* ── grid ── */
+.grid-wrap{overflow-x:auto; margin-top:10px}
+.sg{width:100%; border-collapse:collapse; min-width:560px}
+.sg th,.sg td{border:1px solid var(--border)}
+.th-day{
+  background:var(--blue); color:white;
+  text-align:center; padding:9px 5px;
+  font-size:12px; font-weight:700;
+}
+.th-sh{
+  background:var(--slate); color:white;
+  text-align:center; padding:9px 7px;
+  width:78px; font-size:11px; font-weight:700;
+}
+.sh-hrs{font-size:9px; opacity:.7; display:block; margin-top:2px}
+.cm{background:var(--mint)} .ca{background:var(--amber)} .cn{background:var(--ice)}
+.cb-wrap{
+  display:flex; align-items:center; justify-content:center;
+  padding:8px 4px; cursor:pointer;
+}
+.cb-wrap input[type=checkbox]{
+  width:22px; height:22px; cursor:pointer; accent-color:var(--blue);
+}
+.cb-wrap:active{opacity:.7}
+
+/* ── validation bar ── */
+.vbar{
+  display:flex; gap:12px; flex-wrap:wrap;
+  margin-top:16px; padding:13px 15px;
+  background:#f7fafc; border-radius:9px;
+  border:1px solid var(--border);
+}
+.vi{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700}
+.badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:28px; height:23px; padding:0 7px;
+  border-radius:12px; font-size:12px; font-weight:800; transition:.2s;
+}
+.ok{background:#c6f6d5; color:#276749}
+.err{background:#fed7d7; color:#c53030}
+.ico-ok{color:#48bb78; font-size:16px; font-weight:800}
+.ico-err{color:#fc8181; font-size:16px}
+
+/* ── submit ── */
+.btn-sub{
+  display:block; width:100%; padding:15px;
+  background:var(--blue); color:white; border:none;
+  border-radius:11px; font-size:17px; font-weight:800;
+  cursor:pointer; font-family:inherit; margin-top:18px; transition:.2s;
+}
+.btn-sub:disabled{background:#a0aec0; cursor:not-allowed}
+.btn-sub:not(:disabled):hover{background:#2c5282}
+.btn-sub:not(:disabled):active{transform:scale(.98)}
+
+/* ── loading ── */
+.loading-card{display:none; text-align:center; padding:50px 20px}
+.spinner{
+  width:52px; height:52px; border:5px solid #e2e8f0;
+  border-top-color:var(--blue); border-radius:50%;
+  animation:spin .8s linear infinite; margin:0 auto 18px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-card p{font-size:16px; color:var(--gray); font-weight:600}
+
+/* ── result ── */
+.result-card{display:none; padding:0}
+.res-top{
+  background:linear-gradient(135deg,var(--green),#22543d);
+  color:white; text-align:center; padding:36px 20px;
+  border-radius:14px 14px 0 0;
+}
+.res-top .big{font-size:64px; margin-bottom:12px}
+.res-top h2{font-size:24px; font-weight:800}
+.res-top p{font-size:14px; opacity:.85; margin-top:8px; line-height:1.5}
+.res-body{padding:22px 24px; text-align:center}
+.res-info{
+  background:#f7fafc; border:1.5px solid var(--border);
+  border-radius:9px; padding:14px 16px; font-size:14px;
+  color:var(--slate); margin-bottom:14px; line-height:1.7;
+}
+.btn-again{
+  display:inline-block; padding:11px 28px;
+  background:#f7fafc; color:var(--slate); border:1.5px solid var(--border);
+  border-radius:9px; font-size:14px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+}
+.btn-again:hover{background:#edf2f7}
+
+/* ── error ── */
+.err-card{display:none; padding:0}
+.err-top{
+  background:linear-gradient(135deg,#c53030,#9b2c2c);
+  color:white; text-align:center; padding:30px 20px;
+  border-radius:14px 14px 0 0;
+}
+.err-top .big{font-size:52px; margin-bottom:10px}
+.err-top h2{font-size:20px}
+.err-body{padding:20px 22px; text-align:center}
+.err-msg{
+  background:#fff5f5; border:1.5px solid #feb2b2;
+  border-radius:9px; padding:12px; font-size:13px;
+  color:#c53030; margin-bottom:14px; direction:ltr; text-align:left;
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>&#128203; טופס זמינות משמרות</h1>
+  <p id="subtitle">מלא/י את הזמינות שלך לשבוע הקרוב</p>
+</div>
+
+<!-- FORM -->
+<div class="card" id="form-card">
+
+  <div style="margin-bottom:18px">
+    <label>&#128100; שמך המלא</label>
+    <input type="text" id="emp-name" placeholder="שם פרטי + משפחה" oninput="validate()">
+  </div>
+
+  <label>
+    &#128197; בחר/י את המשמרות שאת/ה יכול/ה לעבוד
+    <span class="hint">(לפחות 10 משמרות)</span>
+  </label>
+
+  <div class="grid-wrap">
+    <table class="sg" id="grid">
+      <thead id="gh"></thead>
+      <tbody id="gb"></tbody>
+    </table>
+  </div>
+
+  <!-- validation bar -->
+  <div class="vbar">
+    <div class="vi">
+      <span id="ic-t" class="ico-err">&#10007;</span>
+      <span>סה"כ: <span class="badge err" id="b-t">0</span>&thinsp;/&thinsp;10+</span>
+    </div>
+    <div class="vi">
+      <span id="ic-n" class="ico-err">&#10007;</span>
+      <span>&#127769; לילה: <span class="badge err" id="b-n">0</span>&thinsp;/&thinsp;2+</span>
+    </div>
+    <div class="vi">
+      <span id="ic-w" class="ico-err">&#10007;</span>
+      <span>&#127955; סופ"ש: <span class="badge err" id="b-w">0</span>&thinsp;/&thinsp;2+
+        <span class="hint">&nbsp;(שישי–שבת)</span>
+      </span>
+    </div>
+  </div>
+
+  <div style="margin-top:18px">
+    <label>&#128172; הערות / בקשות מיוחדות
+      <span class="hint">(אופציונלי)</span>
+    </label>
+    <textarea id="notes"
+      placeholder="לדוגמה: מבקש לא לסדר ביום ד׳, מעדיף משמרות בוקר, לא יכול בשישי הקרוב..."></textarea>
+  </div>
+
+  <button class="btn-sub" id="sub-btn" disabled onclick="doSubmit()">
+    &#9993;&ensp;שלח זמינות למנהל
+  </button>
+</div>
+
+<!-- LOADING -->
+<div class="card loading-card" id="loading-card">
+  <div class="spinner"></div>
+  <p>שולח למנהל...</p>
+</div>
+
+<!-- RESULT -->
+<div class="card result-card" id="result-card">
+  <div class="res-top">
+    <div class="big">&#9989;</div>
+    <h2>הזמינות נשלחה!</h2>
+    <p id="res-msg">המנהל יצור את סידור העבודה בקרוב</p>
+  </div>
+  <div class="res-body">
+    <div class="res-info" id="res-info"></div>
+    <button class="btn-again" onclick="goBack()">&#8592; שלח עובד אחר</button>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div class="card err-card" id="err-card">
+  <div class="err-top">
+    <div class="big">&#10060;</div>
+    <h2>השליחה נכשלה</h2>
+  </div>
+  <div class="err-body">
+    <div class="err-msg" id="err-msg"></div>
+    <button class="btn-again" onclick="goBack()">&#8592; נסה שנית</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ★ הדבק כאן את ה-URL שקיבלת מ-Google Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwzoFfO0325Rb_dbJyD686XQ25W1ifnLn5N3-id-vJpPFMUehkwr_4-2Rudwladuiud/exec';
+// ═══════════════════════════════════════════════════════
+
+const DAYS   = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const SHIFTS = ['בוקר','צהריים','לילה'];
+const HRS    = {'בוקר':'06:00–14:00','צהריים':'14:00–22:00','לילה':'22:00–06:00'};
+const WKND   = new Set(['שישי','שבת']);
+const CLS    = {'בוקר':'cm','צהריים':'ca','לילה':'cn'};
+const SH_KEY = {'בוקר':'ב','צהריים':'צ','לילה':'ל'};
+const DAY_KEY= {'ראשון':'א','שני':'ב','שלישי':'ג','רביעי':'ד','חמישי':'ה','שישי':'ו','שבת':'ש'};
+
+// URL params
+const urlParams = new URLSearchParams(window.location.search);
+const weekParam = urlParams.get('week') || '';
+if (weekParam) document.getElementById('subtitle').textContent = 'שבוע: ' + weekParam;
+const nameParam = urlParams.get('name') || '';
+if (nameParam) document.getElementById('emp-name').value = decodeURIComponent(nameParam);
+const teamParam = urlParams.get('team') || 'default';
+
+// --- parse start date → dates per column ---
+function parseStart(str) {
+  const p = str.split('.');
+  if (p.length !== 3) return null;
+  return new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
+}
+function fmtD(d) {
+  return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');
+}
+const startParam = urlParams.get('start') || '';
+const startDate  = startParam ? parseStart(startParam) : null;
+const weekDates  = startDate
+  ? Array.from({length:7}, (_,i) => { const d=new Date(startDate); d.setDate(startDate.getDate()+i); return d; })
+  : null;
+
+// --- build grid ---
+const head = document.getElementById('gh');
+const body = document.getElementById('gb');
+
+const hr = document.createElement('tr');
+hr.innerHTML = '<th class="th-sh"></th>' +
+  DAYS.map((d,i) => '<th class="th-day">' + d +
+    (weekDates ? '<span class="dd">' + fmtD(weekDates[i]) + '</span>' : '') +
+    '</th>').join('');
+head.appendChild(hr);
+
+SHIFTS.forEach(sh => {
+  const tr = document.createElement('tr');
+  let cells = '<td class="th-sh">' + sh + '<span class="sh-hrs">' + HRS[sh] + '</span></td>';
+  DAYS.forEach(d => {
+    const id = d + '__' + sh;
+    cells += '<td class="' + CLS[sh] + '">'
+           + '<div class="cb-wrap" onclick="toggle(\'' + id + '\')">'
+           + '<input type="checkbox" id="' + id + '"'
+           + ' data-day="' + d + '" data-shift="' + sh + '"'
+           + ' onchange="validate()" onclick="event.stopPropagation()">'
+           + '</div></td>';
+  });
+  tr.innerHTML = cells;
+  body.appendChild(tr);
+});
+
+function toggle(id) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  validate();
+}
+
+function validate() {
+  const cbs    = [...document.querySelectorAll('#grid input:checked')];
+  const total  = cbs.length;
+  const nights = cbs.filter(c => c.dataset.shift === 'לילה').length;
+  const wknds  = cbs.filter(c => WKND.has(c.dataset.day)).length;
+  const name   = document.getElementById('emp-name').value.trim();
+
+  function upd(bid, iid, val, min) {
+    const ok = val >= min;
+    const b  = document.getElementById(bid);
+    b.textContent = val;
+    b.className = 'badge ' + (ok ? 'ok' : 'err');
+    const ic = document.getElementById(iid);
+    ic.innerHTML = ok ? '&#10003;' : '&#10007;';
+    ic.className = ok ? 'ico-ok' : 'ico-err';
+    return ok;
+  }
+  const t = upd('b-t', 'ic-t', total,  10);
+  const n = upd('b-n', 'ic-n', nights,  2);
+  const w = upd('b-w', 'ic-w', wknds,   2);
+  document.getElementById('sub-btn').disabled = !(t && n && w && name.length > 1);
+}
+
+function buildMessage() {
+  const name  = document.getElementById('emp-name').value.trim();
+  const cbs   = [...document.querySelectorAll('#grid input:checked')];
+  const byDay = {};
+  cbs.forEach(c => {
+    const d = c.dataset.day;
+    if (!byDay[d]) byDay[d] = [];
+    byDay[d].push(SH_KEY[c.dataset.shift]);
+  });
+  const parts = DAYS
+    .filter(d => byDay[d] && byDay[d].length)
+    .map(d => DAY_KEY[d] + '-' + byDay[d].join(','));
+  return name + ': ' + parts.join(', ');
+}
+
+function show(id) {
+  ['form-card','loading-card','result-card','err-card']
+    .forEach(c => document.getElementById(c).style.display = (c===id ? 'block' : 'none'));
+  window.scrollTo(0, 0);
+}
+
+async function doSubmit() {
+  if (SCRIPT_URL === 'הדבק-כאן-את-ה-URL') {
+    alert('שגיאה: לא הוגדר SCRIPT_URL. פנה למנהל.');
+    return;
+  }
+
+  const name  = document.getElementById('emp-name').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+  const msg   = buildMessage();
+
+  show('loading-card');
+
+  try {
+    // GET עם פרמטרים — עובד עם no-cors בלי בעיות redirect
+    const params = new URLSearchParams({
+      action: 'submit',
+      name:    name,
+      message: msg,
+      week:    weekParam,
+      notes:   notes,
+      team:    teamParam
+    });
+    await fetch(SCRIPT_URL + '?' + params.toString(), {
+      method: 'GET',
+      mode:   'no-cors'
+    });
+
+    // עם no-cors לא ניתן לקרוא את התגובה — אבל הבקשה עברה
+    const cbs    = [...document.querySelectorAll('#grid input:checked')];
+    const nights = cbs.filter(c => c.dataset.shift === 'לילה').length;
+    const wknds  = cbs.filter(c => WKND.has(c.dataset.day)).length;
+    document.getElementById('res-info').innerHTML =
+      '<strong>' + name + '</strong> — ' + cbs.length + ' משמרות<br>' +
+      '&#127769; לילה: ' + nights + ' &nbsp;|&nbsp; &#127955; סופ"ש: ' + wknds;
+    show('result-card');
+  } catch (err) {
+    document.getElementById('err-msg').textContent = err.message;
+    show('err-card');
+  }
+}
+
+function goBack() {
+  document.getElementById('emp-name').value = '';
+  document.querySelectorAll('#grid input:checked').forEach(c => c.checked = false);
+  document.getElementById('notes').value = '';
+  validate();
+  show('form-card');
+}
+
+validate();
+</script>
+</body>
+</html>
