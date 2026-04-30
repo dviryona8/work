@@ -3,133 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>&#128203; מחולל סידור עבודה</title>
+<title>מחולל סידור עבודה</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1a365d;--blue:#2b6cb0;--slate:#2d3748;
-  --green:#276749;--red:#c53030;--amber:#744210;
-  --gray:#718096;--mint:#f0fff4;--amber-l:#fffbeb;
-  --ice:#ebf4ff;--miss:#fed7d7;--purple-l:#faf5ff;
-  --dot-g:#48bb78;--dot-a:#d69e2e;--dot-n:#4299e1;--dot-p:#9f7aea;
-  --border:#e2e8f0;
+  --navy:#1a365d;--blue:#2563eb;--slate:#334155;
+  --green:#059669;--red:#dc2626;--amber:#d97706;
+  --gray:#64748b;--border:#e2e8f0;
+  --mint:#f0fdf4;--ambl:#fffbeb;--ice:#eef2ff;--miss:#fef2f2;--purpl:#faf5ff;
+  --dg:#22c55e;--da:#f59e0b;--dn:#6366f1;--dp:#a855f7;
 }
-body{font-family:'Segoe UI',Arial,sans-serif;background:#edf2f7;color:var(--slate);direction:rtl;min-height:100vh}
-.app-header{background:linear-gradient(135deg,var(--navy),#2c5282);color:white;padding:20px 32px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.app-header h1{font-size:24px}
-.app-header p{font-size:12px;opacity:.7;margin-top:4px}
-.ctrl{background:white;border-radius:14px;padding:22px 26px;margin:22px auto;max-width:1100px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.ctrl-grid{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:end}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f4f8;color:var(--slate);direction:rtl;min-height:100vh}
+
+/* ── Header ── */
+.app-hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:white;padding:18px 28px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.app-hdr h1{font-size:22px;font-weight:800}
+.app-hdr p{font-size:12px;opacity:.7;margin-top:3px}
+
+/* ── Control panel ── */
+.ctrl{background:white;border-radius:16px;padding:20px 24px;margin:20px auto;max-width:1100px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.ctrl-grid{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:end}
+@media(max-width:700px){.ctrl-grid{grid-template-columns:1fr}}
 .ctrl-group label{display:block;font-weight:700;font-size:12px;color:var(--slate);margin-bottom:7px}
-.ctrl-group input[type=date]{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fdfdfd}
-.ctrl-group textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;direction:rtl;min-height:72px;resize:vertical;background:#fdfdfd}
-.ctrl-group input:focus,.ctrl-group textarea:focus{outline:none;border-color:var(--blue);background:white}
-.btn-load{display:block;width:100%;padding:14px 20px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s}
-.btn-load:hover{background:#2c5282}.btn-load:active{transform:scale(.98)}
-.btn-link{display:block;width:100%;padding:10px;margin-top:8px;background:#ebf8ff;color:var(--blue);border:1.5px solid #bee3f8;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-link:hover{background:#bee3f8}
-.btn-clear{display:block;width:100%;padding:10px;margin-top:6px;background:white;color:var(--red);border:1.5px solid #feb2b2;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-clear:hover{background:#fff5f5}
-.btn-settings{display:block;width:100%;padding:10px;margin-top:6px;background:#f7fafc;color:var(--slate);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-settings:hover{background:#edf2f7}
-.status-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding:12px 15px;background:#f7fafc;border-radius:9px;border:1px solid var(--border);font-size:13px}
-.status-empty{color:var(--gray)}.status-ok{color:var(--green);font-weight:700}.status-loading{color:var(--blue);font-weight:700}
-.pill{display:inline-flex;align-items:center;padding:3px 10px;background:#ebf8ff;color:var(--blue);border-radius:20px;font-size:11px;font-weight:700}
+.ctrl-group input[type=date]{padding:10px 12px;border:2px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:white;width:100%}
+.ctrl-group input[type=date]:focus{outline:none;border-color:var(--blue)}
+.ctrl-group textarea{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:10px;font-size:12px;font-family:inherit;direction:rtl;min-height:70px;resize:vertical;background:white}
+.ctrl-group textarea:focus{outline:none;border-color:var(--blue)}
+
+/* ── Buttons ── */
+.btn{display:block;width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:.18s;text-align:center}
+.btn+.btn{margin-top:7px}
+.btn-primary{background:var(--blue);color:white;font-size:15px;padding:13px}
+.btn-primary:hover{background:#1d4ed8}
+.btn-wa{background:#25d366;color:white}
+.btn-wa:hover{background:#1da851}
+.btn-copy{background:#ebf8ff;color:var(--blue);border:2px solid #bfdbfe}
+.btn-copy:hover{background:#dbeafe}
+.btn-danger{background:white;color:var(--red);border:2px solid #fecaca}
+.btn-danger:hover{background:#fef2f2}
+.btn-settings{background:#f8fafc;color:var(--slate);border:2px solid var(--border)}
+.btn-settings:hover{background:#f1f5f9}
+
+/* ── Status bar ── */
+.status-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);font-size:13px}
+.s-empty{color:var(--gray)}.s-ok{color:var(--green);font-weight:700}.s-loading{color:var(--blue);font-weight:700}
+.pill{display:inline-flex;align-items:center;padding:2px 10px;background:#dbeafe;color:var(--blue);border-radius:20px;font-size:11px;font-weight:700;margin:2px}
+.pill-exc{background:#fef9c3;color:#92400e}
+
+/* ── Output ── */
 #output{max-width:1200px;margin:0 auto 40px}
-.action-bar{display:flex;justify-content:flex-end;gap:10px;margin:0 24px 12px}
-.btn-pdf{border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
-.btn-pdf-mgr{background:var(--navy);color:white}.btn-pdf-emp{background:var(--green);color:white}
+.action-bar{display:flex;justify-content:flex-end;gap:10px;margin:0 20px 10px}
+.btn-pdf{border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-pdf-m{background:var(--navy);color:white}
+.btn-pdf-e{background:var(--green);color:white}
 .btn-pdf:hover{opacity:.88}
-.schedule-card{background:white;border-radius:14px;padding:20px 24px;margin:0 24px 20px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.card-title-bar{background:linear-gradient(135deg,var(--navy),#2c5282);color:white;padding:12px 20px;border-radius:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-.card-title-bar h2{font-size:18px}.card-title-bar .week-lbl{font-size:12px;opacity:.8}
+
+.sched-card{background:white;border-radius:14px;padding:20px 22px;margin:0 20px 18px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.card-title-bar{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:white;padding:11px 18px;border-radius:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.card-title-bar h2{font-size:17px}
+.card-title-bar .wk{font-size:12px;opacity:.8}
+
+/* ── Table ── */
 table{width:100%;border-collapse:collapse;table-layout:fixed}
 th,td{border:1px solid var(--border)}
-.th-label{background:var(--slate);color:white;text-align:center;padding:10px 6px;font-size:12px;width:110px}
-.th-day{background:var(--blue);color:white;text-align:center;padding:6px 4px;font-size:12px}
-.th-day .day-name{font-weight:700;font-size:13px}.th-day .day-date{font-size:10px;opacity:.78;margin-top:2px}
-.toggle-12h{font-size:9px;padding:2px 5px;margin-top:4px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:white;border-radius:4px;cursor:pointer;font-family:inherit;display:inline-block}
+.th-lbl{background:var(--slate);color:white;text-align:center;padding:9px 5px;font-size:11px;width:100px}
+.th-day{background:var(--blue);color:white;text-align:center;padding:6px 3px;font-size:11px}
+.th-day .dn{font-weight:700;font-size:12px}
+.th-day .dd{font-size:10px;opacity:.75;margin-top:2px}
+.toggle-12h{font-size:9px;padding:2px 5px;margin-top:3px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.15);color:white;border-radius:4px;cursor:pointer;font-family:inherit;display:inline-block}
 .toggle-12h:hover{background:rgba(255,255,255,.3)}
-.toggle-12h.active{background:#9f7aea;border-color:#b794f4}
-.td-lbl{background:var(--slate);color:white;text-align:center;padding:8px 6px;vertical-align:middle}
-.td-lbl .shift-name{font-weight:700;font-size:12px}.td-lbl .shift-hrs{font-size:9px;opacity:.75;margin-top:3px}
-.td-cell{text-align:center;padding:8px 4px;vertical-align:middle;min-height:44px}
-.bg-morning{background:var(--mint)}.bg-afternoon{background:var(--amber-l)}
-.bg-night{background:var(--ice)}.bg-missing{background:var(--miss)}.bg-12h{background:var(--purple-l)}
+.toggle-12h.active{background:#7c3aed;border-color:#a78bfa}
+.td-lbl{background:var(--slate);color:white;text-align:center;padding:7px 5px;vertical-align:middle}
+.td-lbl .sn{font-weight:700;font-size:11px}
+.td-lbl .sh{font-size:9px;opacity:.75;margin-top:2px}
+.td-cell{text-align:center;padding:7px 3px;vertical-align:middle;min-height:42px}
+.bg-m{background:var(--mint)}.bg-a{background:var(--ambl)}.bg-n{background:var(--ice)}.bg-miss{background:var(--miss)}.bg-12{background:var(--purpl)}
 .emp-name{font-weight:700;font-size:11px;color:var(--green)}
-.emp-name-12h{font-weight:700;font-size:11px;color:#6b46c1}
-.emp-missing{font-size:10px;color:var(--red)}
-.edit-line{border-bottom:1px dashed #c6f6d5;margin:4px 8px 0;height:10px}
-.edit-line-r{border-bottom:1px dashed #fc8181;margin:4px 8px 0;height:10px}
-.editable-cell{cursor:pointer;transition:filter .15s}.editable-cell:hover{filter:brightness(.92)}
-.edit-hint{font-size:9px;color:var(--gray);margin-top:3px;opacity:.6}
-.shift-sub-hrs{font-size:9px;color:var(--gray);margin-top:2px}
-.av-section-title{font-weight:700;font-size:13px;color:var(--slate);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border)}
-.td-emp-info{background:#f7fafc;padding:5px 8px;vertical-align:middle}
-.emp-info-name{font-size:11px;font-weight:600}.emp-info-stat{font-size:9px;color:var(--gray);margin-top:2px}
-.emp-pref-tag{font-size:9px;color:var(--amber);display:block;margin-top:2px}
-.td-avail{background:white;text-align:center;padding:5px 2px;vertical-align:middle}
-.dot{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;font-size:7px;color:white;margin:1px;font-weight:700}
-.dot-morning{background:var(--dot-g)}.dot-afternoon{background:var(--dot-a)}.dot-night{background:var(--dot-n)}
+.emp-name-12{font-weight:700;font-size:11px;color:#7c3aed}
+.emp-miss{font-size:10px;color:var(--red)}
+.edit-hint{font-size:9px;color:var(--gray);margin-top:2px;opacity:.6}
+.editable{cursor:pointer;transition:filter .15s}
+.editable:hover{filter:brightness(.93)}
+.sh-sub{font-size:9px;color:var(--gray);margin-top:2px}
+
+/* ── Availability table ── */
+.sec-title{font-weight:700;font-size:13px;color:var(--slate);margin:16px 0 8px;padding-top:12px;border-top:1px solid var(--border)}
+.td-emp{background:#f8fafc;padding:5px 8px;vertical-align:middle}
+.emp-nm{font-size:11px;font-weight:600}
+.emp-st{font-size:9px;color:var(--gray);margin-top:2px}
+.exc-badge{font-size:9px;color:#92400e;background:#fef9c3;border-radius:4px;padding:1px 5px;margin-top:3px;display:inline-block}
+.td-av{background:white;text-align:center;padding:4px 2px;vertical-align:middle}
+.dot{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:7px;color:white;margin:1px;font-weight:700}
+.dot-m{background:var(--dg)}.dot-a{background:var(--da)}.dot-n{background:var(--dn)}
 .dot-assigned{box-shadow:0 0 0 2px var(--slate)}
-.night-section-title{font-weight:700;font-size:13px;color:var(--slate);margin:14px 0 8px;padding-top:12px;border-top:1px solid var(--border)}
-.balance-wrap{display:flex;gap:8px;align-items:flex-end;height:55px}
+
+/* ── Night bars ── */
+.bars-wrap{display:flex;gap:8px;align-items:flex-end;height:55px;margin-top:8px}
 .bar-col{display:flex;flex-direction:column;align-items:center;flex:1}
-.bar-count{font-size:10px;font-weight:700;color:var(--dot-n)}.bar-fill{background:var(--dot-n);border-radius:3px 3px 0 0;width:100%;min-height:3px}
-.bar-name{font-size:9px;color:var(--gray);margin-top:3px;text-align:center}
-.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--gray)}
+.bar-cnt{font-size:10px;font-weight:700;color:var(--dn)}
+.bar-fill{background:var(--dn);border-radius:3px 3px 0 0;width:100%;min-height:3px}
+.bar-nm{font-size:9px;color:var(--gray);margin-top:3px;text-align:center}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:10px;color:var(--gray)}
 .leg-item{display:flex;align-items:center;gap:4px}
-.notes-section{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
-.note-row{font-size:11px;color:var(--slate);padding:3px 0}.note-name{font-weight:700;color:var(--blue)}
+.notes-sec{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.note-row{font-size:11px;padding:3px 0}
+.note-nm{font-weight:700;color:var(--blue)}
+
+/* ── Password overlay ── */
+.pw-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy),#1d4ed8);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.pw-box{background:white;border-radius:18px;padding:32px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.pw-box .ico{font-size:46px;margin-bottom:12px}
+.pw-box h2{font-size:21px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.pw-box p{font-size:13px;color:var(--gray);margin-bottom:20px}
+.pw-inp{width:100%;padding:13px;text-align:center;letter-spacing:5px;font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;font-family:inherit;margin-bottom:12px}
+.pw-inp:focus{outline:none;border-color:var(--blue)}
+.pw-btn{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+.pw-btn:hover{background:#1d4ed8}
+.pw-err{color:var(--red);font-size:13px;font-weight:700;margin-top:8px;display:none}
+
+/* ── Modals (shared) ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:8888;padding:20px}
+.modal-box{background:white;border-radius:16px;padding:26px 24px;max-width:420px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.35);max-height:90vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:16px;text-align:center}
+.modal-inp{width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:10px;direction:rtl}
+.modal-inp:focus{outline:none;border-color:var(--blue)}
+.modal-row{display:flex;gap:8px;margin-top:6px}
+.modal-btn{flex:1;padding:11px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.modal-btn-primary{background:var(--blue);color:white}
+.modal-btn-primary:hover{background:#1d4ed8}
+.modal-btn-cancel{background:#f8fafc;color:var(--slate);border:2px solid var(--border)}
+.modal-btn-cancel:hover{background:#f1f5f9}
+.modal-err{color:var(--red);font-size:12px;font-weight:700;margin-top:6px;display:none;text-align:center}
+.modal-ok{color:var(--green);font-size:12px;font-weight:700;margin-top:6px;display:none;text-align:center}
+
+/* ── Contacts modal ── */
+.contact-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8fafc;border-radius:10px;margin-bottom:6px;border:1px solid var(--border)}
+.contact-info{flex:1}
+.contact-name{font-weight:700;font-size:14px;color:var(--slate)}
+.contact-phone{font-size:12px;color:var(--gray);margin-top:2px}
+.btn-wa-sm{padding:7px 12px;background:#25d366;color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-wa-sm:hover{background:#1da851}
+.btn-del{padding:7px 10px;background:white;color:var(--red);border:1.5px solid #fecaca;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn-del:hover{background:#fef2f2}
+.add-contact-form{background:#f0fdf4;border-radius:10px;padding:14px;margin-top:12px;border:1.5px solid #bbf7d0}
+.add-contact-form .form-title{font-weight:700;font-size:13px;color:var(--green);margin-bottom:10px}
+.inp-row{display:flex;gap:8px}
+.inp-small{flex:1;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;direction:rtl}
+.inp-small:focus{outline:none;border-color:var(--blue)}
+.no-contacts{text-align:center;color:var(--gray);font-size:13px;padding:20px}
+
+/* ── Edit popup ── */
+.edit-popup{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:7777;padding:20px}
+.edit-box{background:white;border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.edit-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:12px;text-align:center}
+.edit-free-row{display:flex;gap:6px;margin-bottom:10px}
+.edit-free-inp{flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;direction:rtl}
+.edit-free-inp:focus{outline:none;border-color:var(--blue)}
+.edit-free-btn{padding:9px 14px;background:var(--blue);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.edit-free-btn:hover{background:#1d4ed8}
+.edit-list{max-height:220px;overflow-y:auto;margin-bottom:10px}
+.edit-item{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:4px;border:2px solid transparent;transition:.15s;display:flex;align-items:center;gap:8px}
+.edit-item:hover{background:#dbeafe;border-color:#93c5fd}
+.edit-item-sel{background:var(--mint);border-color:#86efac;color:var(--green)}
+.edit-item-none{color:var(--red)}
+.edit-item-unavail{color:var(--gray);font-style:italic;font-size:12px}
+.edit-sec-lbl{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;padding:5px 4px 2px;border-top:1px solid var(--border);margin-top:4px}
+
 @media print{
   body{background:white}
-  .no-print,.ctrl,.app-header,.action-bar{display:none !important}
-  .schedule-card{box-shadow:none;padding:0;margin:0 0 10px;border-radius:0}
+  .no-print,.ctrl,.app-hdr,.action-bar,.pw-overlay{display:none!important}
+  .sched-card{box-shadow:none;padding:0;margin:0 0 10px;border-radius:0}
   #output{margin:0;max-width:none}
   @page{size:A4 landscape;margin:8mm 10mm}
   table{font-size:10px}
-  body.print-employee .manager-only{display:none !important}
-  body.print-employee #emp-card{display:block !important}
-  body:not(.print-employee) #emp-card{display:none !important}
+  body.print-emp .mgr-only{display:none!important}
+  body.print-emp #emp-card{display:block!important}
+  body:not(.print-emp) #emp-card{display:none!important}
 }
-/* Password overlay */
-.pw-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a365d,#2b6cb0);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
-.pw-box{background:white;border-radius:18px;padding:36px 32px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.pw-box .ico{font-size:48px;margin-bottom:14px}
-.pw-box h2{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:6px}
-.pw-box p{font-size:13px;color:var(--gray);margin-bottom:22px}
-.pw-input{width:100%;padding:13px;text-align:center;letter-spacing:6px;font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;font-family:inherit;margin-bottom:14px}
-.pw-input:focus{outline:none;border-color:var(--blue)}
-.pw-btn{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
-.pw-btn:hover{background:#2c5282}
-.pw-err{color:var(--red);font-size:13px;font-weight:700;margin-top:10px;display:none}
-/* Modals */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:8888;padding:20px}
-.modal-box{background:white;border-radius:16px;padding:28px 26px;max-width:380px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.35)}
-.modal-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:18px;text-align:center}
-.modal-input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:10px;direction:rtl}
-.modal-input:focus{outline:none;border-color:var(--blue)}
-.modal-btn-row{display:flex;gap:10px;margin-top:6px}
-.modal-btn{flex:1;padding:11px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
-.modal-btn-primary{background:var(--blue);color:white}.modal-btn-primary:hover{background:#2c5282}
-.modal-btn-cancel{background:#f7fafc;color:var(--slate);border:1.5px solid var(--border)}.modal-btn-cancel:hover{background:#edf2f7}
-.modal-err{color:var(--red);font-size:12px;font-weight:700;margin-top:6px;display:none;text-align:center}
-.modal-ok{color:var(--green);font-size:12px;font-weight:700;margin-top:6px;display:none;text-align:center}
-/* Edit popup */
-.edit-popup{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:7777;padding:20px}
-.edit-box{background:white;border-radius:14px;padding:22px 20px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.edit-box-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:12px;text-align:center}
-.edit-free-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;direction:rtl;margin-bottom:10px}
-.edit-free-input:focus{outline:none;border-color:var(--blue)}
-.edit-free-row{display:flex;gap:6px;margin-bottom:12px}
-.edit-free-btn{padding:9px 14px;background:var(--blue);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
-.edit-free-btn:hover{background:#2c5282}
-.edit-emp-list{max-height:240px;overflow-y:auto;margin-bottom:12px}
-.edit-emp-item{padding:9px 13px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:4px;border:2px solid transparent;transition:.15s;display:flex;align-items:center;gap:8px}
-.edit-emp-item:hover{background:#ebf8ff;border-color:#bee3f8}
-.edit-emp-selected{background:var(--mint);border-color:#9ae6b4;color:var(--green)}
-.edit-emp-none{color:var(--red)}.edit-emp-unavail{color:var(--gray);font-style:italic;font-size:12px}
-.edit-section-lbl{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;padding:5px 4px 2px;border-top:1px solid var(--border);margin-top:4px}
 </style>
 </head>
 <body>
@@ -137,106 +187,128 @@ th,td{border:1px solid var(--border)}
 <!-- Password overlay -->
 <div class="pw-overlay" id="pw-overlay">
   <div class="pw-box">
-    <div class="ico">&#128274;</div>
+    <div class="ico">🔒</div>
     <h2>כניסת מנהל</h2>
-    <p>הזן סיסמה כדי לגשת לאפליקציה</p>
-    <input class="pw-input" type="password" id="pw-input" placeholder="••••" maxlength="20"
-      onkeydown="if(event.key==='Enter') checkPassword()">
-    <button class="pw-btn" onclick="checkPassword()">כניסה</button>
-    <div class="pw-err" id="pw-err">&#10060; סיסמה שגויה</div>
+    <p>הזן סיסמה כדי לגשת למערכת</p>
+    <input class="pw-inp" type="password" id="pw-inp" placeholder="••••" maxlength="20"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="pw-btn" onclick="checkPw()">כניסה</button>
+    <div class="pw-err" id="pw-err">❌ סיסמה שגויה</div>
   </div>
 </div>
 
 <!-- Change password modal -->
 <div class="modal-overlay" id="pw-change-modal" style="display:none">
   <div class="modal-box">
-    <div class="modal-title">&#128272; שינוי סיסמה</div>
-    <input class="modal-input" type="password" id="pw-current" placeholder="סיסמה נוכחית" maxlength="20">
-    <input class="modal-input" type="password" id="pw-new" placeholder="סיסמה חדשה" maxlength="20">
-    <input class="modal-input" type="password" id="pw-confirm" placeholder="אישור סיסמה חדשה" maxlength="20"
-      onkeydown="if(event.key==='Enter') saveNewPassword()">
-    <div class="modal-err" id="pw-change-err"></div>
-    <div class="modal-ok" id="pw-change-ok">&#10003; הסיסמה עודכנה!</div>
-    <div class="modal-btn-row">
-      <button class="modal-btn modal-btn-primary" onclick="saveNewPassword()">שמור</button>
-      <button class="modal-btn modal-btn-cancel" onclick="closeChangePassword()">ביטול</button>
+    <div class="modal-title">🔑 שינוי סיסמה</div>
+    <input class="modal-inp" type="password" id="pw-cur" placeholder="סיסמה נוכחית" maxlength="20">
+    <input class="modal-inp" type="password" id="pw-new" placeholder="סיסמה חדשה" maxlength="20">
+    <input class="modal-inp" type="password" id="pw-conf" placeholder="אישור סיסמה חדשה" maxlength="20"
+      onkeydown="if(event.key==='Enter')savePw()">
+    <div class="modal-err" id="pw-chg-err"></div>
+    <div class="modal-ok" id="pw-chg-ok">✓ הסיסמה עודכנה!</div>
+    <div class="modal-row">
+      <button class="modal-btn modal-btn-primary" onclick="savePw()">שמור</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closePwChange()">ביטול</button>
     </div>
+  </div>
+</div>
+
+<!-- Contacts & WhatsApp modal -->
+<div class="modal-overlay" id="contacts-modal" style="display:none" onclick="if(event.target===this)closeContacts()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-title">📱 עובדים ו-WhatsApp</div>
+    <div id="wa-week-info" style="background:#f0fdf4;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#166534;border:1px solid #bbf7d0"></div>
+    <div id="contacts-list"></div>
+    <button class="btn btn-wa" style="margin-top:12px" onclick="showAddForm()">+ הוסף עובד</button>
+    <div class="add-contact-form" id="add-form" style="display:none">
+      <div class="form-title">➕ הוספת עובד/ת</div>
+      <div class="inp-row">
+        <input class="inp-small" id="new-name" type="text" placeholder="שם העובד/ת">
+        <input class="inp-small" id="new-phone" type="tel" placeholder="05XXXXXXXX">
+      </div>
+      <div class="modal-row" style="margin-top:8px">
+        <button class="modal-btn modal-btn-primary" onclick="saveContact()">שמור</button>
+        <button class="modal-btn modal-btn-cancel" onclick="hideAddForm()">ביטול</button>
+      </div>
+    </div>
+    <button class="modal-btn modal-btn-cancel" style="width:100%;margin-top:10px" onclick="closeContacts()">סגור</button>
   </div>
 </div>
 
 <!-- Edit shift popup -->
-<div class="edit-popup" id="edit-popup" style="display:none" onclick="if(event.target===this)closeEditPopup()">
+<div class="edit-popup" id="edit-popup" style="display:none" onclick="if(event.target===this)closeEdit()">
   <div class="edit-box">
-    <div class="edit-box-title" id="edit-popup-title">עריכת משמרת</div>
-    <!-- Free-text: assign anyone -->
+    <div class="edit-title" id="edit-title">עריכת משמרת</div>
     <div class="edit-free-row">
-      <input class="edit-free-input" type="text" id="edit-free-name" placeholder="הקלד שם עובד/ת חופשי...">
-      <button class="edit-free-btn" onclick="applyFreeText()">שבץ</button>
+      <input class="edit-free-inp" type="text" id="edit-free" placeholder="הקלד שם עובד/ת...">
+      <button class="edit-free-btn" onclick="applyFree()">שבץ</button>
     </div>
-    <div class="edit-emp-list" id="edit-emp-list"></div>
-    <button class="modal-btn modal-btn-cancel" style="width:100%" onclick="closeEditPopup()">ביטול</button>
+    <div class="edit-list" id="edit-list"></div>
+    <button class="modal-btn modal-btn-cancel" style="width:100%" onclick="closeEdit()">ביטול</button>
   </div>
 </div>
 
-<header class="app-header no-print">
-  <h1 id="app-title">&#128203; מחולל סידור עבודה שבועי</h1>
+<header class="app-hdr no-print">
+  <h1 id="app-title">📋 מחולל סידור עבודה שבועי</h1>
   <p>הנתונים מגיעים ישירות מהעובדים — לחץ "טען וצור סידור"</p>
 </header>
 
 <div class="ctrl no-print">
   <div class="ctrl-grid">
     <div class="ctrl-group">
-      <label>&#128197; שבוע מתחיל (ראשון)</label>
+      <label>📅 שבוע מתחיל (יום ראשון)</label>
       <input type="date" id="weekStart">
     </div>
     <div class="ctrl-group">
-      <label>&#11088; העדפות עובדים <span style="font-weight:400;color:var(--gray)">(אופציונלי)</span></label>
-      <textarea id="preferences" placeholder="דביר יונה: מעדיף לילה&#10;שרה כהן: מעדיפה בוקר"></textarea>
+      <label>⭐ העדפות עובדים <span style="font-weight:400;color:var(--gray)">(אופציונלי)</span></label>
+      <textarea id="prefs-txt" placeholder="דביר: מעדיף לילה&#10;שרה: מעדיפה בוקר"></textarea>
     </div>
-    <div class="ctrl-group" style="min-width:180px">
-      <label>&#128260; נתוני עובדים</label>
-      <button class="btn-load" onclick="loadAndGenerate()">&#9660;&ensp;טען וצור סידור</button>
-      <button class="btn-link" onclick="copyEmployeeLink()">&#128279; העתק קישור לעובדים</button>
-      <button class="btn-clear" onclick="clearData()">&#128465; נקה נתוני שבוע</button>
-      <button class="btn-settings" onclick="openChangePassword()">&#128272; שנה סיסמת כניסה</button>
+    <div class="ctrl-group" style="min-width:185px">
+      <label>⚙️ פעולות</label>
+      <button class="btn btn-primary" onclick="loadAndGenerate()">⬇️ טען וצור סידור</button>
+      <button class="btn btn-wa" onclick="openContacts()">📱 שלח לעובדים ב-WhatsApp</button>
+      <button class="btn btn-copy" onclick="copyLink()">🔗 העתק קישור לעובדים</button>
+      <button class="btn btn-danger" onclick="clearData()">🗑️ נקה נתוני שבוע</button>
+      <button class="btn btn-settings" onclick="openPwChange()">🔑 שנה סיסמה</button>
     </div>
   </div>
   <div class="status-bar" id="status-bar">
-    <span class="status-empty">&#9679; ממתין — לחץ "טען וצור סידור"</span>
+    <span class="s-empty">⬤ ממתין — לחץ "טען וצור סידור"</span>
   </div>
 </div>
 
 <div id="output"></div>
 
 <script>
-const SCRIPT_URL       = 'https://script.google.com/macros/s/AKfycbwzoFfO0325Rb_dbJyD686XQ25W1ifnLn5N3-id-vJpPFMUehkwr_4-2Rudwladuiud/exec';
-const DEFAULT_PASSWORD = '1234';
-const SHEET_ID         = '1SuN7trkDHTQaQYeRAUPUaftG-2DlIduYEtdRhchKWi4';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwzoFfO0325Rb_dbJyD686XQ25W1ifnLn5N3-id-vJpPFMUehkwr_4-2Rudwladuiud/exec';
+const SHEET_ID   = '1SuN7trkDHTQaQYeRAUPUaftG-2DlIduYEtdRhchKWi4';
+const DEF_PW     = '1234';
 
-// ── זיהוי סניף מה-URL (?team=xxx) ────────────────────────────
-const TEAM_ID = new URLSearchParams(window.location.search).get('team') || 'default';
-const TEAM_LABEL = TEAM_ID === 'default' ? '' : ' — סניף: ' + TEAM_ID;
+const TEAM_ID = new URLSearchParams(location.search).get('team') || 'default';
+let curPw = localStorage.getItem('mgr_pw_' + TEAM_ID) || DEF_PW;
 
-// סיסמה נפרדת לכל סניף
-let currentPassword = localStorage.getItem('mgr_password_' + TEAM_ID) || DEFAULT_PASSWORD;
+let G = {sched:null,avail:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,
+         dayMode:{},sched12h:{},editCtx:null,subs:[]};
 
-// Global state
-let G = { sched:null, avail:null, hours:null, nightH:null, iso:null, notes:[], prefs:{}, dates:null,
-          dayMode:{},   // day -> '12h' | undefined
-          sched12h:{},  // day -> { יום: emp|null, לילה: emp|null }
-          editCtx:null  // current edit context
-        };
+// ── Base URL ──────────────────────────────────────────────────
+function getBaseUrl() {
+  return location.href.replace(/[^/]*(\?.*)?$/, '');
+}
+function getStartStr(iso) {
+  const d = new Date(iso);
+  return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+}
 
-// ── Data fetch (עם תמיכה בסניפים) ────────────────────────────
+// ── Data ──────────────────────────────────────────────────────
 async function gasGet(action) {
   if (action === 'clear') {
-    try { await fetch(SCRIPT_URL+'?action=clear&team='+encodeURIComponent(TEAM_ID),{redirect:'follow',mode:'no-cors'}); } catch(e) {}
+    try { await fetch(SCRIPT_URL+'?action=clear&team='+encodeURIComponent(TEAM_ID),{mode:'no-cors'}); } catch(e) {}
     return {cleared:true};
   }
-  if (!SHEET_ID) throw new Error('לא הוגדר SHEET_ID');
-  const tabName = 'submissions_' + TEAM_ID;
-  const url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tabName);
-  const res = await fetch(url,{redirect:'follow'});
+  const tab = 'submissions_' + TEAM_ID;
+  const url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab);
+  const res = await fetch(url);
   if (!res.ok) throw new Error('לא ניתן לגשת לגיליון — וודא שהוא שותף כ"צופה"');
   return parseCSV(await res.text());
 }
@@ -245,371 +317,470 @@ function parseCSV(text) {
   if (lines.length < 2) return [];
   return lines.slice(1).map(line => {
     const c = splitCSV(line);
-    return {timestamp:(c[0]||'').trim(),name:(c[1]||'').trim(),message:(c[2]||'').trim(),week:(c[3]||'').trim(),notes:(c[4]||'').trim()};
-  }).filter(s=>s.name);
+    return {timestamp:(c[0]||'').trim(), name:(c[1]||'').trim(), message:(c[2]||'').trim(), week:(c[3]||'').trim(), notes:(c[4]||'').trim()};
+  }).filter(s => s.name);
 }
 function splitCSV(line) {
-  const r=[];let cur='',q=false;
-  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(q&&line[i+1]==='"'){cur+='"';i++;}else q=!q;}else if(c===','&&!q){r.push(cur);cur='';}else cur+=c;}
-  r.push(cur);return r;
+  const r=[]; let cur='', q=false;
+  for (let i=0; i<line.length; i++) {
+    const c=line[i];
+    if (c==='"') { if(q&&line[i+1]==='"'){cur+='"';i++;} else q=!q; }
+    else if (c===','&&!q) { r.push(cur); cur=''; }
+    else cur+=c;
+  }
+  r.push(cur); return r;
 }
 
-const DAY_MAP  ={א:'ראשון',ב:'שני',ג:'שלישי',ד:'רביעי',ה:'חמישי',ו:'שישי',ש:'שבת'};
-const SHIFT_MAP={ב:'בוקר',צ:'צהריים',ל:'לילה'};
-const DAYS     =['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-const SHIFTS   =['בוקר','צהריים','לילה'];
-const HRS      ={בוקר:'06:00–14:00',צהריים:'14:00–22:00',לילה:'22:00–06:00'};
-const HRS12    ={יום:'06:00–18:00',לילה:'18:00–06:00'};
-const SH       ={בוקר:'ב',צהריים:'צ',לילה:'ל'};
-const CELL_BG  ={בוקר:'bg-morning',צהריים:'bg-afternoon',לילה:'bg-night'};
-const DOT_CLS  ={בוקר:'dot-morning',צהריים:'dot-afternoon',לילה:'dot-night'};
-const SHIFT_HR ={בוקר:6,צהריים:14,לילה:22};
+// ── Parsing ───────────────────────────────────────────────────
+const DAY_MAP  = {א:'ראשון',ב:'שני',ג:'שלישי',ד:'רביעי',ה:'חמישי',ו:'שישי',ש:'שבת'};
+const SHIFT_MAP= {ב:'בוקר',צ:'צהריים',ל:'לילה'};
+const DAYS     = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const SHIFTS   = ['בוקר','צהריים','לילה'];
+const HRS      = {בוקר:'06:00–14:00',צהריים:'14:00–22:00',לילה:'22:00–06:00'};
+const SH       = {בוקר:'ב',צהריים:'צ',לילה:'ל'};
+const CELL_BG  = {בוקר:'bg-m',צהריים:'bg-a',לילה:'bg-n'};
+const DOT_CLS  = {בוקר:'dot-m',צהריים:'dot-a',לילה:'dot-n'};
+const SHIFT_HR = {בוקר:6,צהריים:14,לילה:22};
 
-function getWeekDates(iso){const s=new Date(iso);return Array.from({length:7},(_,i)=>{const d=new Date(s);d.setDate(s.getDate()+i);return d;});}
-function fmt(d){return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');}
-function weekLabel(dates){return fmt(dates[0])+' – '+fmt(dates[6]);}
+function getWeekDates(iso) {
+  const s = new Date(iso);
+  return Array.from({length:7}, (_,i) => { const d=new Date(s); d.setDate(s.getDate()+i); return d; });
+}
+function fmt(d) { return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'); }
+function weekLabel(dates) { return fmt(dates[0])+' – '+fmt(dates[6]); }
 
 function parseMessages(txt) {
-  const res={};
-  for(const raw of txt.split('\n')){
-    const line=raw.trim();if(!line||!line.includes(':'))continue;
-    const ci=line.indexOf(':');const name=line.slice(0,ci).trim();const body=line.slice(ci+1);
-    const avail={};
-    for(const[,dc,ss]of body.matchAll(/([אבגדהוש])\s*-\s*([בצל,\s]+)/g)){const day=DAY_MAP[dc];if(day)avail[day]=[...ss.matchAll(/[בצל]/g)].map(m=>SHIFT_MAP[m[0]]);}
-    if(name)res[name]=avail;
+  const res = {};
+  for (const raw of txt.split('\n')) {
+    const line = raw.trim();
+    if (!line || !line.includes(':')) continue;
+    const ci = line.indexOf(':');
+    const name = line.slice(0, ci).trim();
+    const body = line.slice(ci+1);
+    const avail = {};
+    for (const [,dc,ss] of body.matchAll(/([אבגדהוש])\s*-\s*([בצל,\s]+)/g)) {
+      const day = DAY_MAP[dc];
+      if (day) avail[day] = [...ss.matchAll(/[בצל]/g)].map(m => SHIFT_MAP[m[0]]);
+    }
+    if (name) res[name] = avail;
   }
   return res;
 }
 function parsePrefs(txt) {
-  const res={};const KW={לילה:'לילה',ערב:'לילה',בוקר:'בוקר',צהריים:'צהריים'};
-  for(const raw of txt.split('\n')){
-    const line=raw.trim();if(!line||!line.includes(':'))continue;
-    const ci=line.indexOf(':');const name=line.slice(0,ci).trim();const desc=line.slice(ci+1);
-    const b={};for(const[kw,shift]of Object.entries(KW))if(desc.includes(kw))b[shift]=3;
-    if(Object.keys(b).length)res[name]=b;
+  const res = {};
+  const KW = {לילה:'לילה',ערב:'לילה',בוקר:'בוקר',צהריים:'צהריים'};
+  for (const raw of txt.split('\n')) {
+    const line = raw.trim();
+    if (!line || !line.includes(':')) continue;
+    const ci = line.indexOf(':');
+    const name = line.slice(0, ci).trim();
+    const desc = line.slice(ci+1);
+    const b = {};
+    for (const [kw, shift] of Object.entries(KW)) if (desc.includes(kw)) b[shift]=3;
+    if (Object.keys(b).length) res[name] = b;
   }
   return res;
 }
 
-// ── 24-hour gap ───────────────────────────────────────────────
-function shiftStartHour(dayIdx,shift){return dayIdx*24+SHIFT_HR[shift];}
-function violates24h(assignedList,dayIdx,shift){
-  const newH=shiftStartHour(dayIdx,shift);
-  return assignedList.some(([d,s])=>Math.abs(shiftStartHour(d,s)-newH)<32);
-}
-
 // ── Scheduler ─────────────────────────────────────────────────
-function schedule(avail,prefs){
-  const sched   =Object.fromEntries(DAYS.map(d=>[d,Object.fromEntries(SHIFTS.map(s=>[s,null]))]));
-  const hours   =Object.fromEntries(Object.keys(avail).map(e=>[e,0]));
-  const nightH  =Object.fromEntries(Object.keys(avail).map(e=>[e,0]));
-  const nightCap=Object.fromEntries(Object.keys(avail).map(e=>[e,Math.max(DAYS.filter(d=>(avail[e][d]||[]).includes('לילה')).length,1)]));
-  const assigned=Object.fromEntries(Object.keys(avail).map(e=>[e,[]]));
-  function key(emp,shift){
-    const b=(prefs[emp]||{})[shift]||1;const nb=(prefs[emp]||{})['לילה']||1;
-    return shift==='לילה'?(nightH[emp]/nightCap[emp])/b:(hours[emp]/b)*Math.pow(nb,.4);
+function shiftStartHr(dayIdx, shift) { return dayIdx*24 + SHIFT_HR[shift]; }
+function violates24h(assigned, dayIdx, shift) {
+  const newH = shiftStartHr(dayIdx, shift);
+  return assigned.some(([d,s]) => Math.abs(shiftStartHr(d,s) - newH) < 24);
+}
+function schedule(avail, prefs) {
+  const sched    = Object.fromEntries(DAYS.map(d => [d, Object.fromEntries(SHIFTS.map(s => [s,null]))]));
+  const hours    = Object.fromEntries(Object.keys(avail).map(e => [e,0]));
+  const nightH   = Object.fromEntries(Object.keys(avail).map(e => [e,0]));
+  const nightCap = Object.fromEntries(Object.keys(avail).map(e => [e, Math.max(DAYS.filter(d=>(avail[e][d]||[]).includes('לילה')).length,1)]));
+  const assigned = Object.fromEntries(Object.keys(avail).map(e => [e,[]]));
+  function score(emp, shift) {
+    const b = (prefs[emp]||{})[shift]||1;
+    const nb = (prefs[emp]||{})['לילה']||1;
+    return shift==='לילה' ? (nightH[emp]/nightCap[emp])/b : (hours[emp]/b)*Math.pow(nb,.4);
   }
-  for(const shift of['לילה','בוקר','צהריים']){
-    for(const[dayIdx,d]of DAYS.entries()){
-      const cands=Object.keys(avail)
-        .filter(e=>(avail[e][d]||[]).includes(shift)&&!violates24h(assigned[e],dayIdx,shift))
-        .sort((a,b2)=>key(a,shift)-key(b2,shift));
-      if(cands.length){
-        const ch=cands[0];sched[d][shift]=ch;hours[ch]+=8;
-        if(shift==='לילה')nightH[ch]+=8;
-        assigned[ch].push([dayIdx,shift]);
+  for (const shift of ['לילה','בוקר','צהריים']) {
+    for (const [dayIdx, d] of DAYS.entries()) {
+      const cands = Object.keys(avail)
+        .filter(e => (avail[e][d]||[]).includes(shift) && !violates24h(assigned[e], dayIdx, shift))
+        .sort((a,b) => score(a,shift) - score(b,shift));
+      if (cands.length) {
+        const ch = cands[0];
+        sched[d][shift] = ch; hours[ch]+=8;
+        if (shift==='לילה') nightH[ch]+=8;
+        assigned[ch].push([dayIdx, shift]);
       }
     }
   }
-  return{sched,hours,nightH};
+  return {sched, hours, nightH};
 }
 
-// ── Toggle 12h mode ───────────────────────────────────────────
-function toggleDayMode(day){
-  if(G.dayMode[day]==='12h'){
-    G.dayMode[day]='8h';
-  }else{
-    G.dayMode[day]='12h';
-    if(!G.sched12h[day])G.sched12h[day]={יום:null,לילה:null};
-  }
+// ── 12h mode ──────────────────────────────────────────────────
+function toggleDayMode(day) {
+  G.dayMode[day] = G.dayMode[day]==='12h' ? '8h' : '12h';
+  if (G.dayMode[day]==='12h' && !G.sched12h[day]) G.sched12h[day] = {יום:null,לילה:null};
   renderOutput();
 }
-
-// ── Print ─────────────────────────────────────────────────────
-function printManager(){document.body.classList.remove('print-employee');window.print();}
-function printEmployee(){document.body.classList.add('print-employee');window.print();setTimeout(()=>document.body.classList.remove('print-employee'),500);}
-function setStatus(html){document.getElementById('status-bar').innerHTML=html;}
 
 // ── Load & Generate ───────────────────────────────────────────
-async function loadAndGenerate(){
-  const iso=document.getElementById('weekStart').value;
-  if(!iso){alert('בחר תאריך יום ראשון של השבוע');return;}
-  setStatus('<span class="status-loading">&#9696; טוען נתוני עובדים...</span>');
-  try{
-    const subs=await gasGet('list');
-    if(!Array.isArray(subs)||subs.length===0){
-      setStatus('<span class="status-empty">&#9888; אין הגשות עדיין — שלח את הטופס לעובדים</span>');
-      document.getElementById('output').innerHTML='';return;
+async function loadAndGenerate() {
+  const iso = document.getElementById('weekStart').value;
+  if (!iso) { alert('בחר תאריך יום ראשון של השבוע'); return; }
+  setStatus('<span class="s-loading">⏳ טוען נתוני עובדים...</span>');
+  try {
+    const subs = await gasGet('list');
+    if (!Array.isArray(subs) || subs.length===0) {
+      setStatus('<span class="s-empty">⚠️ אין הגשות עדיין — שלח את הקישור לעובדים</span>');
+      document.getElementById('output').innerHTML = '';
+      return;
     }
-    const messages=subs.map(s=>s.message).join('\n');
-    const notes=subs.filter(s=>s.notes).map(s=>s.name+': '+s.notes);
-    const pills=subs.map(s=>'<span class="pill">&#10003; '+s.name+'</span>').join(' ');
-    setStatus('<span class="status-ok">&#10003; '+subs.length+' עובדים הגישו זמינות</span>&nbsp;&nbsp;'+pills);
-    renderSchedule(iso,messages,notes);
-  }catch(err){
-    setStatus('<span style="color:var(--red)">&#10060; שגיאה בטעינה: '+err.message+'</span>');
+    const messages = subs.map(s => s.message).join('\n');
+    const notes    = subs.filter(s => s.notes).map(s => s.name+': '+s.notes);
+    const excCount = subs.filter(s => s.notes && s.notes.includes('[שבוע חריג]')).length;
+    const pills    = subs.map(s => {
+      const isExc = s.notes && s.notes.includes('[שבוע חריג]');
+      return `<span class="pill${isExc?' pill-exc':''}">${isExc?'⚠️ ':' ✓ '}${s.name}</span>`;
+    }).join('');
+    setStatus(`<span class="s-ok">✓ ${subs.length} עובדים הגישו זמינות${excCount?' (⚠️ '+excCount+' שבוע חריג)':''}</span>&nbsp;${pills}`);
+    renderSchedule(iso, messages, notes, subs);
+  } catch(err) {
+    setStatus(`<span style="color:var(--red)">❌ שגיאה: ${err.message}</span>`);
   }
 }
 
-async function clearData(){
-  if(!confirm('למחוק את כל הגשות העובדים?\n(פעולה זו אינה ניתנת לביטול)'))return;
-  setStatus('<span class="status-loading">&#9696; מנקה...</span>');
-  try{
+async function clearData() {
+  if (!confirm('למחוק את כל הגשות העובדים?\n(פעולה זו אינה ניתנת לביטול)')) return;
+  setStatus('<span class="s-loading">⏳ מנקה...</span>');
+  try {
     await gasGet('clear');
-    setStatus('<span class="status-empty">&#9679; הנתונים נמחקו. מוכן לשבוע הבא.</span>');
-    document.getElementById('output').innerHTML='';
-    G={sched:null,avail:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,dayMode:{},sched12h:{},editCtx:null};
-  }catch(e){setStatus('<span style="color:var(--red)">שגיאה: '+e.message+'</span>');}
+    setStatus('<span class="s-empty">⬤ הנתונים נמחקו. מוכן לשבוע הבא.</span>');
+    document.getElementById('output').innerHTML = '';
+    G = {sched:null,avail:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,dayMode:{},sched12h:{},editCtx:null,subs:[]};
+  } catch(e) { setStatus(`<span style="color:var(--red)">שגיאה: ${e.message}</span>`); }
 }
 
+function setStatus(html) { document.getElementById('status-bar').innerHTML = html; }
+
 // ── Render ────────────────────────────────────────────────────
-function renderSchedule(iso,messagesText,extraNotes){
-  const dates =getWeekDates(iso);
-  const avail =parseMessages(messagesText);
-  const prefs =parsePrefs(document.getElementById('preferences').value);
-  const {sched,hours,nightH}=schedule(avail,prefs);
-  G={...G,sched,avail,hours,nightH,iso,notes:extraNotes,prefs,dates};
+function renderSchedule(iso, messagesText, extraNotes, subs) {
+  const dates  = getWeekDates(iso);
+  const avail  = parseMessages(messagesText);
+  const prefs  = parsePrefs(document.getElementById('prefs-txt').value);
+  const {sched, hours, nightH} = schedule(avail, prefs);
+  G = {...G, sched, avail, hours, nightH, iso, notes:extraNotes, prefs, dates, subs:subs||[]};
   renderOutput();
 }
 
-function renderOutput(){
-  const{sched,avail,hours,nightH,notes,prefs,dates,dayMode,sched12h}=G;
-  const emps  =Object.keys(avail).sort();
-  const wLabel=weekLabel(dates);
-  const maxN  =Math.max(...emps.map(e=>nightH[e]||0),1);
+function renderOutput() {
+  const {sched,avail,hours,nightH,notes,prefs,dates,dayMode,sched12h,subs} = G;
+  const emps   = Object.keys(avail).sort();
+  const wLabel = weekLabel(dates);
+  const maxN   = Math.max(...emps.map(e=>nightH[e]||0), 1);
 
-  // ── Day headers with toggle ──
-  const dayThs='<th class="th-label">משמרת</th>'
-    +DAYS.map((d,i)=>{
-      const is12=dayMode[d]==='12h';
-      return`<th class="th-day"><div class="day-name">${d}</div><div class="day-date">${fmt(dates[i])}</div>`
-        +`<button class="toggle-12h no-print${is12?' active':''}" onclick="toggleDayMode('${d}')">${is12?'↩ 3×8ש\'':'⬛ 2×12ש\''}</button></th>`;
-    }).join('');
+  // Day headers
+  const dayThs = '<th class="th-lbl">משמרת</th>' + DAYS.map((d,i) => {
+    const is12 = dayMode[d]==='12h';
+    return `<th class="th-day"><div class="dn">${d}</div><div class="dd">${fmt(dates[i])}</div>
+      <button class="toggle-12h no-print${is12?' active':''}" onclick="toggleDayMode('${d}')">${is12?"↩ 3×8ש'":'⬛ 2×12ש\''}</button></th>`;
+  }).join('');
 
-  // ── Schedule rows ──
-  const schedRows=SHIFTS.map((shift,si)=>{
-    const cells=DAYS.map(day=>{
-      const mode=dayMode[day]==='12h';
-      if(mode){
-        if(shift==='בוקר'){
-          // Day 12h cell (rowspan=2)
-          const emp=sched12h[day]?.יום||null;
-          return`<td class="td-cell bg-12h editable-cell" rowspan="2" style="vertical-align:middle" onclick="openEditPopup('${day}','יום')" title="לחץ לעריכה">`
-            +(emp?`<div class="emp-name-12h">${emp}</div>`:`<div class="emp-missing">&#9888; אין כיסוי</div>`)
-            +`<div class="shift-sub-hrs">06:00–18:00</div><div class="edit-hint">✎</div></td>`;
-        }else if(shift==='צהריים'){
-          return''; // merged by rowspan
-        }else{ // לילה
-          const emp=sched12h[day]?.לילה||null;
-          return`<td class="td-cell bg-12h editable-cell" style="background:#ede9fe" onclick="openEditPopup('${day}','לילה12')" title="לחץ לעריכה">`
-            +(emp?`<div class="emp-name-12h">${emp}</div>`:`<div class="emp-missing">&#9888; אין כיסוי</div>`)
-            +`<div class="shift-sub-hrs">18:00–06:00</div><div class="edit-hint">✎</div></td>`;
+  // Schedule rows
+  const schedRows = SHIFTS.map(shift => {
+    const cells = DAYS.map(day => {
+      const mode = dayMode[day]==='12h';
+      if (mode) {
+        if (shift==='בוקר') {
+          const emp = sched12h[day]?.יום||null;
+          return `<td class="td-cell bg-12 editable" rowspan="2" style="vertical-align:middle" onclick="openEdit('${day}','יום')" title="לחץ לעריכה">
+            ${emp?`<div class="emp-name-12">${emp}</div>`:`<div class="emp-miss">⚠️ אין כיסוי</div>`}
+            <div class="sh-sub">06:00–18:00</div><div class="edit-hint">✎</div></td>`;
+        } else if (shift==='צהריים') {
+          return ''; // rowspan
+        } else {
+          const emp = sched12h[day]?.לילה||null;
+          return `<td class="td-cell bg-12 editable" style="background:#ede9fe" onclick="openEdit('${day}','לילה12')" title="לחץ לעריכה">
+            ${emp?`<div class="emp-name-12">${emp}</div>`:`<div class="emp-miss">⚠️ אין כיסוי</div>`}
+            <div class="sh-sub">18:00–06:00</div><div class="edit-hint">✎</div></td>`;
         }
-      }else{
-        const emp=sched[day][shift];
-        const bg=emp?CELL_BG[shift]:'bg-missing';
-        return`<td class="td-cell ${bg} editable-cell" onclick="openEditPopup('${day}','${shift}')" title="לחץ לעריכה">`
-          +(emp?`<div class="emp-name">${emp}</div><div class="edit-line"></div>`:`<div class="emp-missing">&#9888; אין כיסוי</div><div class="edit-line-r"></div>`)
-          +`<div class="edit-hint">✎</div></td>`;
+      } else {
+        const emp = sched[day][shift];
+        const bg  = emp ? CELL_BG[shift] : 'bg-miss';
+        return `<td class="td-cell ${bg} editable" onclick="openEdit('${day}','${shift}')" title="לחץ לעריכה">
+          ${emp?`<div class="emp-name">${emp}</div>`:`<div class="emp-miss">⚠️ אין כיסוי</div>`}
+          <div class="edit-hint">✎</div></td>`;
       }
     }).join('');
-    const lbl=shift==='בוקר'?'בוקר':shift==='צהריים'?'צהריים':'לילה';
-    return`<tr><td class="td-lbl"><div class="shift-name">${lbl}</div><div class="shift-hrs">${HRS[shift]}</div></td>${cells}</tr>`;
+    return `<tr><td class="td-lbl"><div class="sn">${shift}</div><div class="sh">${HRS[shift]}</div></td>${cells}</tr>`;
   }).join('');
 
-  // ── Availability rows ──
-  const avRows=emps.map(emp=>{
-    const ep=prefs[emp]||{};
-    const prefShifts=SHIFTS.filter(s=>(ep[s]||1)>1);
-    const prefTag=prefShifts.length?'<span class="emp-pref-tag">&#11088; מעדיף: '+prefShifts.join(', ')+'</span>':'';
-    const cells=DAYS.map(day=>{
-      const ds=avail[emp][day]||[];
-      const dots=SHIFTS.filter(s=>ds.includes(s)).map(s=>'<span class="dot '+DOT_CLS[s]+(sched[day][s]===emp?' dot-assigned':'')+'" >'+SH[s]+'</span>').join('');
-      return'<td class="td-avail">'+dots+'</td>';
+  // Availability rows (with exceptional week badge)
+  const avRows = emps.map(emp => {
+    const empSub = subs.find(s => s.name === emp);
+    const isExc  = empSub && empSub.notes && empSub.notes.includes('[שבוע חריג]');
+    const ep = prefs[emp]||{};
+    const prefTag = SHIFTS.filter(s=>(ep[s]||1)>1).length ?
+      `<span style="font-size:9px;color:var(--amber)">⭐ מעדיף: ${SHIFTS.filter(s=>(ep[s]||1)>1).join(', ')}</span>` : '';
+    const cells = DAYS.map(day => {
+      const ds = avail[emp][day]||[];
+      const dots = SHIFTS.filter(s=>ds.includes(s)).map(s =>
+        `<span class="dot ${DOT_CLS[s]}${sched[day][s]===emp?' dot-assigned':''}">${SH[s]}</span>`
+      ).join('');
+      return `<td class="td-av">${dots}</td>`;
     }).join('');
-    return`<tr><td class="td-emp-info"><div class="emp-info-name">${emp}</div><div class="emp-info-stat">${hours[emp]}h | ${(nightH[emp]||0)/8} לילות &#127769;</div>${prefTag}</td>${cells}</tr>`;
+    return `<tr>
+      <td class="td-emp">
+        <div class="emp-nm">${emp}${isExc?'&nbsp;<span class="exc-badge">⚠️ שבוע חריג</span>':''}</div>
+        <div class="emp-st">${hours[emp]}ש׳ | ${(nightH[emp]||0)/8} לילות 🌙</div>
+        ${prefTag}
+      </td>${cells}</tr>`;
   }).join('');
 
-  // ── Night bars ──
-  const bars=emps.map(emp=>{
-    const n=nightH[emp]||0;const pct=maxN>0?Math.round((n/maxN)*36):0;
-    return`<div class="bar-col"><div class="bar-count">${n/8}</div><div class="bar-fill" style="height:${Math.max(pct,3)}px"></div><div class="bar-name">${emp.split(' ')[0]}</div></div>`;
+  // Night bars
+  const bars = emps.map(emp => {
+    const n = nightH[emp]||0;
+    const pct = maxN > 0 ? Math.round((n/maxN)*36) : 0;
+    return `<div class="bar-col"><div class="bar-cnt">${n/8}</div>
+      <div class="bar-fill" style="height:${Math.max(pct,3)}px"></div>
+      <div class="bar-nm">${emp.split(' ')[0]}</div></div>`;
   }).join('');
 
-  const legend='<div class="legend">'
-    +SHIFTS.map(s=>'<span class="leg-item"><span class="dot '+DOT_CLS[s]+'">'+SH[s]+'</span>'+s+' '+HRS[s]+'</span>').join('')
-    +'<span class="leg-item" style="margin-right:auto">✎ = לחץ לעריכה | ⬛ 2×12ש\' = עבור ל-2 משמרות של 12 שעות</span></div>';
+  const legend = `<div class="legend">
+    ${SHIFTS.map(s=>`<span class="leg-item"><span class="dot ${DOT_CLS[s]}">${SH[s]}</span>${s} ${HRS[s]}</span>`).join('')}
+    <span class="leg-item" style="margin-right:auto">✎ = לחץ לעריכה</span></div>`;
 
-  let notesHTML='';
-  if(notes&&notes.length)notesHTML='<div class="notes-section"><div class="av-section-title">&#128172; הערות עובדים:</div>'
-    +notes.map(n=>'<div class="note-row"><span class="note-name">'+n.split(':')[0]+':</span>'+n.slice(n.indexOf(':')+1)+'</div>').join('')+'</div>';
+  let notesHTML = '';
+  if (notes && notes.length) notesHTML = `<div class="notes-sec"><div class="sec-title">💬 הערות עובדים:</div>
+    ${notes.map(n => `<div class="note-row"><span class="note-nm">${n.split(':')[0]}:</span>${n.slice(n.indexOf(':')+1)}</div>`).join('')}</div>`;
 
-  // Employee card (simple, no toggle buttons)
-  const empSimpleRows=SHIFTS.map(shift=>{
-    const cells=DAYS.map(day=>{
-      const mode=dayMode[day]==='12h';
-      if(mode){
-        if(shift==='בוקר'){const emp=sched12h[day]?.יום||null;return`<td class="td-cell bg-12h" rowspan="2" style="vertical-align:middle">${emp?`<div class="emp-name-12h">${emp}</div><div class="shift-sub-hrs">06–18</div>`:'<div class="emp-missing">&#9888;</div>'}</td>`;}
-        if(shift==='צהריים')return'';
-        const emp=sched12h[day]?.לילה||null;
-        return`<td class="td-cell" style="background:#ede9fe;vertical-align:middle">${emp?`<div class="emp-name-12h">${emp}</div><div class="shift-sub-hrs">18–06</div>`:'<div class="emp-missing">&#9888;</div>'}</td>`;
+  // Simple employee card
+  const empRows = SHIFTS.map(shift => {
+    const cells = DAYS.map(day => {
+      const mode = dayMode[day]==='12h';
+      if (mode) {
+        if (shift==='בוקר') {
+          const emp = sched12h[day]?.יום||null;
+          return `<td class="td-cell bg-12" rowspan="2" style="vertical-align:middle">${emp?`<div class="emp-name-12">${emp}</div><div class="sh-sub">06–18</div>`:'<div class="emp-miss">⚠️</div>'}</td>`;
+        }
+        if (shift==='צהריים') return '';
+        const emp = sched12h[day]?.לילה||null;
+        return `<td class="td-cell" style="background:#ede9fe">${emp?`<div class="emp-name-12">${emp}</div><div class="sh-sub">18–06</div>`:'<div class="emp-miss">⚠️</div>'}</td>`;
       }
-      const emp=sched[day][shift];const bg=emp?CELL_BG[shift]:'bg-missing';
-      return`<td class="td-cell ${bg}">${emp?`<div class="emp-name">${emp}</div>`:'<div class="emp-missing">&#9888;</div>'}</td>`;
+      const emp = sched[day][shift];
+      return `<td class="td-cell ${emp?CELL_BG[shift]:'bg-miss'}">${emp?`<div class="emp-name">${emp}</div>`:'<div class="emp-miss">⚠️</div>'}</td>`;
     }).join('');
-    return`<tr><td class="td-lbl"><div class="shift-name">${shift}</div><div class="shift-hrs">${HRS[shift]}</div></td>${cells}</tr>`;
+    return `<tr><td class="td-lbl"><div class="sn">${shift}</div><div class="sh">${HRS[shift]}</div></td>${cells}</tr>`;
   }).join('');
 
-  const dayThsSimple='<th class="th-label">משמרת</th>'+DAYS.map((d,i)=>`<th class="th-day"><div class="day-name">${d}</div><div class="day-date">${fmt(dates[i])}</div></th>`).join('');
+  const dayThsSimple = '<th class="th-lbl">משמרת</th>' + DAYS.map((d,i)=>`<th class="th-day"><div class="dn">${d}</div><div class="dd">${fmt(dates[i])}</div></th>`).join('');
 
-  document.getElementById('output').innerHTML=`
+  document.getElementById('output').innerHTML = `
     <div class="action-bar no-print">
-      <button class="btn-pdf btn-pdf-emp" onclick="printEmployee()">&#128196; PDF לעובדים</button>
-      <button class="btn-pdf btn-pdf-mgr" onclick="printManager()">&#128203; PDF למנהל</button>
+      <button class="btn-pdf btn-pdf-e" onclick="printEmp()">📄 PDF לעובדים</button>
+      <button class="btn-pdf btn-pdf-m" onclick="printMgr()">📋 PDF למנהל</button>
     </div>
-    <div class="schedule-card" id="mgr-card">
-      <div class="card-title-bar"><h2>&#128203; סידור עבודה שבועי</h2><span class="week-lbl">שבוע: ${wLabel}</span></div>
+    <div class="sched-card" id="mgr-card">
+      <div class="card-title-bar"><h2>📋 סידור עבודה שבועי</h2><span class="wk">שבוע: ${wLabel}</span></div>
       <table><thead><tr>${dayThs}</tr></thead><tbody>${schedRows}</tbody></table>
-      <div class="manager-only">
-        <div class="av-section-title">&#128202; זמינות עובדים:</div>
+      <div class="mgr-only">
+        <div class="sec-title">📊 זמינות עובדים:</div>
         <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${avRows}</tbody></table>
-        <div class="night-section-title">&#127769; איזון משמרות לילה:</div>
-        <div class="balance-wrap">${bars}</div>
+        <div class="sec-title">🌙 איזון משמרות לילה:</div>
+        <div class="bars-wrap">${bars}</div>
         ${notesHTML}
       </div>
       ${legend}
     </div>
-    <div class="schedule-card" id="emp-card" style="display:none">
-      <div class="card-title-bar"><h2>&#128203; סידור עבודה שבועי — לעובדים</h2><span class="week-lbl">שבוע: ${wLabel}</span></div>
-      <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${empSimpleRows}</tbody></table>
+    <div class="sched-card" id="emp-card" style="display:none">
+      <div class="card-title-bar"><h2>📋 סידור עבודה שבועי — לעובדים</h2><span class="wk">שבוע: ${wLabel}</span></div>
+      <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${empRows}</tbody></table>
       ${legend}
     </div>`;
 }
 
 // ── Edit popup ────────────────────────────────────────────────
-function openEditPopup(day,shift){
-  if(!G.avail)return;
-  G.editCtx={day,shift};
-  const is12shift=(shift==='יום'||shift==='לילה12');
-  const current=is12shift?(G.sched12h[day]||{})[shift==='יום'?'יום':'לילה']:G.sched[day][shift];
-  const allEmps=Object.keys(G.avail);
-  const available=is12shift?allEmps:allEmps.filter(e=>(G.avail[e][day]||[]).includes(shift));
-  const unavailable=is12shift?[]:allEmps.filter(e=>!(G.avail[e][day]||[]).includes(shift));
-  const dayIdx=DAYS.indexOf(day);
-
-  const shiftLabel=is12shift?(shift==='יום'?'משמרת יום 06:00–18:00':'משמרת לילה 18:00–06:00'):(shift+' '+HRS[shift]);
-  document.getElementById('edit-popup-title').textContent=day+' — '+shiftLabel;
-  document.getElementById('edit-free-name').value='';
-
-  let html=`<div class="edit-emp-item edit-emp-none${!current?' edit-emp-selected':''}" onclick="applyEdit(null)">&#9888; אין כיסוי</div>`;
-  if(available.length){
-    html+='<div class="edit-section-lbl">זמינים למשמרת זו</div>';
-    html+=available.map(e=>{
-      const sel=e===current?' edit-emp-selected':'';
-      return`<div class="edit-emp-item${sel}" onclick="applyEdit('${e}')">${e}</div>`;
-    }).join('');
+function openEdit(day, shift) {
+  if (!G.avail) return;
+  G.editCtx = {day, shift};
+  const is12 = shift==='יום'||shift==='לילה12';
+  const current = is12 ? (G.sched12h[day]||{})[shift==='יום'?'יום':'לילה'] : G.sched[day][shift];
+  const allEmps = Object.keys(G.avail);
+  const available   = is12 ? allEmps : allEmps.filter(e=>(G.avail[e][day]||[]).includes(shift));
+  const unavailable = is12 ? [] : allEmps.filter(e=>!(G.avail[e][day]||[]).includes(shift));
+  const shiftLabel  = is12 ? (shift==='יום'?'משמרת יום 06:00–18:00':'משמרת לילה 18:00–06:00') : (shift+' '+HRS[shift]);
+  document.getElementById('edit-title').textContent = day + ' — ' + shiftLabel;
+  document.getElementById('edit-free').value = '';
+  let html = `<div class="edit-item edit-item-none${!current?' edit-item-sel':''}" onclick="applyEdit(null)">⚠️ אין כיסוי</div>`;
+  if (available.length) {
+    html += '<div class="edit-sec-lbl">זמינים למשמרת זו</div>';
+    html += available.map(e => `<div class="edit-item${e===current?' edit-item-sel':''}" onclick="applyEdit('${e}')">${e}</div>`).join('');
   }
-  if(unavailable.length){
-    html+='<div class="edit-section-lbl">לא הגישו זמינות למשמרת זו</div>';
-    html+=unavailable.map(e=>`<div class="edit-emp-item edit-emp-unavail" onclick="applyEdit('${e}')">${e} (לא זמין)</div>`).join('');
+  if (unavailable.length) {
+    html += '<div class="edit-sec-lbl">לא הגישו זמינות למשמרת זו</div>';
+    html += unavailable.map(e => `<div class="edit-item edit-item-unavail" onclick="applyEdit('${e}')">${e} (לא זמין)</div>`).join('');
   }
-  document.getElementById('edit-emp-list').innerHTML=html;
-  document.getElementById('edit-popup').style.display='flex';
-  setTimeout(()=>document.getElementById('edit-free-name').focus(),100);
+  document.getElementById('edit-list').innerHTML = html;
+  document.getElementById('edit-popup').style.display = 'flex';
+  setTimeout(()=>document.getElementById('edit-free').focus(), 100);
 }
-
-function applyFreeText(){
-  const name=document.getElementById('edit-free-name').value.trim();
-  if(!name){alert('הזן שם');return;}
+function applyFree() {
+  const name = document.getElementById('edit-free').value.trim();
+  if (!name) { alert('הזן שם'); return; }
   applyEdit(name);
 }
-
-function applyEdit(emp){
-  const{day,shift}=G.editCtx;
-  const is12shift=(shift==='יום'||shift==='לילה12');
-  if(is12shift){
-    const key12=shift==='יום'?'יום':'לילה';
-    if(!G.sched12h[day])G.sched12h[day]={יום:null,לילה:null};
-    G.sched12h[day][key12]=emp;
-  }else{
-    const prev=G.sched[day][shift];
-    G.sched[day][shift]=emp;
-    if(prev){G.hours[prev]=(G.hours[prev]||8)-8;if(shift==='לילה')G.nightH[prev]=(G.nightH[prev]||8)-8;}
-    if(emp){if(!G.hours[emp])G.hours[emp]=0;G.hours[emp]+=8;if(shift==='לילה'){if(!G.nightH[emp])G.nightH[emp]=0;G.nightH[emp]+=8;}}
+function applyEdit(emp) {
+  const {day, shift} = G.editCtx;
+  const is12 = shift==='יום'||shift==='לילה12';
+  if (is12) {
+    const key12 = shift==='יום' ? 'יום' : 'לילה';
+    if (!G.sched12h[day]) G.sched12h[day] = {יום:null,לילה:null};
+    G.sched12h[day][key12] = emp;
+  } else {
+    const prev = G.sched[day][shift];
+    G.sched[day][shift] = emp;
+    if (prev) { G.hours[prev]=(G.hours[prev]||8)-8; if(shift==='לילה')G.nightH[prev]=(G.nightH[prev]||8)-8; }
+    if (emp)  { if(!G.hours[emp])G.hours[emp]=0; G.hours[emp]+=8; if(shift==='לילה'){if(!G.nightH[emp])G.nightH[emp]=0;G.nightH[emp]+=8;} }
   }
-  document.getElementById('edit-popup').style.display='none';
+  document.getElementById('edit-popup').style.display = 'none';
   renderOutput();
 }
-
-function closeEditPopup(){document.getElementById('edit-popup').style.display='none';}
+function closeEdit() { document.getElementById('edit-popup').style.display = 'none'; }
 
 // ── Password ──────────────────────────────────────────────────
-function checkPassword(){
-  const val=document.getElementById('pw-input').value;
-  if(val===currentPassword){document.getElementById('pw-overlay').style.display='none';}
-  else{
-    const err=document.getElementById('pw-err');err.style.display='block';
-    document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();
-    setTimeout(()=>{err.style.display='none';},2500);
+function checkPw() {
+  if (document.getElementById('pw-inp').value === curPw) {
+    document.getElementById('pw-overlay').style.display = 'none';
+  } else {
+    const err = document.getElementById('pw-err'); err.style.display = 'block';
+    document.getElementById('pw-inp').value = '';
+    setTimeout(() => err.style.display='none', 2500);
   }
 }
-function openChangePassword(){
-  ['pw-current','pw-new','pw-confirm'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('pw-change-err').style.display='none';
-  document.getElementById('pw-change-ok').style.display='none';
+function openPwChange() {
+  ['pw-cur','pw-new','pw-conf'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pw-chg-err').style.display='none';
+  document.getElementById('pw-chg-ok').style.display='none';
   document.getElementById('pw-change-modal').style.display='flex';
-  setTimeout(()=>document.getElementById('pw-current').focus(),100);
+  setTimeout(()=>document.getElementById('pw-cur').focus(),100);
 }
-function saveNewPassword(){
-  const cur=document.getElementById('pw-current').value;
+function savePw() {
+  const cur=document.getElementById('pw-cur').value;
   const np=document.getElementById('pw-new').value;
-  const conf=document.getElementById('pw-confirm').value;
-  const err=document.getElementById('pw-change-err');const ok=document.getElementById('pw-change-ok');
-  err.style.display='none';ok.style.display='none';
-  if(cur!==currentPassword){err.textContent='❌ הסיסמה הנוכחית שגויה';err.style.display='block';return;}
-  if(np.length<2){err.textContent='❌ סיסמה קצרה מדי';err.style.display='block';return;}
-  if(np!==conf){err.textContent='❌ הסיסמאות אינן תואמות';err.style.display='block';return;}
-  currentPassword=np;localStorage.setItem('mgr_password_'+TEAM_ID,np);ok.style.display='block';
-  setTimeout(()=>closeChangePassword(),1500);
+  const conf=document.getElementById('pw-conf').value;
+  const err=document.getElementById('pw-chg-err'); const ok=document.getElementById('pw-chg-ok');
+  err.style.display='none'; ok.style.display='none';
+  if (cur!==curPw) {err.textContent='❌ הסיסמה הנוכחית שגויה';err.style.display='block';return;}
+  if (np.length<2) {err.textContent='❌ סיסמה קצרה מדי';err.style.display='block';return;}
+  if (np!==conf) {err.textContent='❌ הסיסמאות אינן תואמות';err.style.display='block';return;}
+  curPw=np; localStorage.setItem('mgr_pw_'+TEAM_ID,np); ok.style.display='block';
+  setTimeout(closePwChange, 1500);
 }
-function closeChangePassword(){document.getElementById('pw-change-modal').style.display='none';}
+function closePwChange() { document.getElementById('pw-change-modal').style.display='none'; }
 
-// ── Copy link (כולל team) ─────────────────────────────────────
-function copyEmployeeLink(){
-  const iso=document.getElementById('weekStart').value;
-  if(!iso){alert('בחר תאריך שבוע קודם');return;}
-  const d=new Date(iso);
-  const s=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
+// ── Copy link ─────────────────────────────────────────────────
+function copyLink() {
+  const iso = document.getElementById('weekStart').value;
+  if (!iso) { alert('בחר תאריך שבוע קודם'); return; }
   const teamParam = TEAM_ID !== 'default' ? '&team='+encodeURIComponent(TEAM_ID) : '';
-  const url=window.location.origin+'/employee.html?start='+s+teamParam;
-  navigator.clipboard.writeText(url).then(()=>alert('✓ הקישור הועתק!\n\n'+url)).catch(()=>prompt('העתק:',url));
+  const url = getBaseUrl() + 'employee.html?start=' + getStartStr(iso) + teamParam;
+  navigator.clipboard.writeText(url)
+    .then(() => alert('✓ הקישור הועתק!\n\n' + url))
+    .catch(() => prompt('העתק:', url));
 }
 
-// ── Default week + team label ─────────────────────────────────
+// ── Contacts & WhatsApp ───────────────────────────────────────
+function getContacts() {
+  return JSON.parse(localStorage.getItem('contacts_'+TEAM_ID)||'[]');
+}
+function saveContacts(list) {
+  localStorage.setItem('contacts_'+TEAM_ID, JSON.stringify(list));
+}
+
+function openContacts() {
+  const iso = document.getElementById('weekStart').value;
+  const infoEl = document.getElementById('wa-week-info');
+  if (iso) {
+    infoEl.textContent = '📅 שבוע: ' + getStartStr(iso) + ' — לחץ "שלח" ליד כל עובד לשליחת הקישור ב-WhatsApp';
+  } else {
+    infoEl.textContent = '⚠️ לא נבחר שבוע — בחר תאריך בפאנל הראשי לפני השליחה';
+    infoEl.style.background = '#fef9c3';
+  }
+  renderContacts();
+  document.getElementById('contacts-modal').style.display = 'flex';
+}
+function closeContacts() {
+  document.getElementById('contacts-modal').style.display = 'none';
+  hideAddForm();
+}
+function renderContacts() {
+  const list = getContacts();
+  const iso  = document.getElementById('weekStart').value;
+  const el   = document.getElementById('contacts-list');
+  if (!list.length) {
+    el.innerHTML = '<div class="no-contacts">עדיין אין עובדים ברשימה.<br>לחץ "+ הוסף עובד" להתחיל.</div>';
+    return;
+  }
+  el.innerHTML = list.map((c,i) => `
+    <div class="contact-row">
+      <div class="contact-info">
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-phone">📱 ${c.phone}</div>
+      </div>
+      <button class="btn-wa-sm" onclick="sendWhatsApp(${i})">📤 שלח</button>
+      <button class="btn-del" onclick="deleteContact(${i})">🗑️</button>
+    </div>`).join('');
+}
+function sendWhatsApp(idx) {
+  const contacts = getContacts();
+  const c = contacts[idx];
+  const iso = document.getElementById('weekStart').value;
+  if (!iso) { alert('בחר תאריך שבוע קודם'); return; }
+  const teamParam = TEAM_ID !== 'default' ? '&team='+encodeURIComponent(TEAM_ID) : '';
+  const url = getBaseUrl() + 'employee.html?start=' + getStartStr(iso) + '&name=' + encodeURIComponent(c.name) + teamParam;
+  const text = `היי ${c.name}! 👋\nאנא מלא/י את זמינותך למשמרות לשבוע ${getStartStr(iso)}:\n${url}`;
+  const phone = c.phone.replace(/[^0-9]/g,'').replace(/^0/,'972');
+  window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(text), '_blank');
+}
+function showAddForm() { document.getElementById('add-form').style.display='block'; document.getElementById('new-name').focus(); }
+function hideAddForm() { document.getElementById('add-form').style.display='none'; document.getElementById('new-name').value=''; document.getElementById('new-phone').value=''; }
+function saveContact() {
+  const name  = document.getElementById('new-name').value.trim();
+  const phone = document.getElementById('new-phone').value.trim();
+  if (!name || !phone) { alert('מלא שם ומספר טלפון'); return; }
+  const list = getContacts();
+  list.push({name, phone});
+  saveContacts(list);
+  hideAddForm();
+  renderContacts();
+}
+function deleteContact(idx) {
+  if (!confirm('למחוק עובד זה?')) return;
+  const list = getContacts();
+  list.splice(idx, 1);
+  saveContacts(list);
+  renderContacts();
+}
+
+// ── Print ─────────────────────────────────────────────────────
+function printMgr() { document.body.classList.remove('print-emp'); window.print(); }
+function printEmp()  { document.body.classList.add('print-emp'); window.print(); setTimeout(()=>document.body.classList.remove('print-emp'),500); }
+
+// ── Init ──────────────────────────────────────────────────────
 (()=>{
-  const t=new Date();const d=t.getDay();const diff=d===0?7:7-d;t.setDate(t.getDate()+diff);
-  document.getElementById('weekStart').value=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
-  if(TEAM_ID!=='default'){
-    document.getElementById('app-title').textContent='📋 מחולל סידור עבודה — סניף '+TEAM_ID;
-    document.title='סידור עבודה — '+TEAM_ID;
+  // Default to next Sunday
+  const t=new Date(); const day=t.getDay(); const diff=day===0?7:7-day;
+  t.setDate(t.getDate()+diff);
+  document.getElementById('weekStart').value = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  if (TEAM_ID !== 'default') {
+    document.getElementById('app-title').textContent = '📋 מחולל סידור עבודה — ' + TEAM_ID;
+    document.title = 'סידור עבודה — ' + TEAM_ID;
   }
 })();
 </script>
 <style>
 @media print{
-  body.print-employee #mgr-card{display:none !important}
-  body.print-employee #emp-card{display:block !important}
-  body:not(.print-employee) #emp-card{display:none !important}
+  body.print-emp #mgr-card{display:none!important}
+  body.print-emp #emp-card{display:block!important}
+  body:not(.print-emp) #emp-card{display:none!important}
 }
 </style>
 </body>

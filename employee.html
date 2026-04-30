@@ -2,408 +2,290 @@
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>טופס זמינות משמרות</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#1a365d; --blue:#2b6cb0; --slate:#2d3748;
-  --green:#276749; --red:#c53030; --gray:#718096;
-  --mint:#f0fff4; --amber:#fffbeb; --ice:#ebf4ff;
-  --dg:#48bb78; --da:#d69e2e; --dn:#4299e1;
-  --border:#e2e8f0;
-}
-body{
-  font-family:'Segoe UI',Arial,sans-serif;
-  background:#edf2f7; color:var(--slate);
-  direction:rtl; min-height:100vh; padding-bottom:50px;
-}
-.hdr{
-  background:linear-gradient(135deg,var(--navy),#2c5282);
-  color:white; padding:20px; text-align:center;
-}
-.hdr h1{font-size:22px; font-weight:800}
-.hdr p{font-size:13px; opacity:.75; margin-top:5px}
-.card{
-  background:white; border-radius:14px; padding:22px 24px;
-  margin:20px auto; max-width:820px;
-  box-shadow:0 2px 14px rgba(0,0,0,.09);
-}
-label{display:block; font-weight:700; font-size:13px; color:var(--slate); margin-bottom:7px}
-.hint{color:var(--gray); font-weight:400; font-size:11px}
-input[type=text]{
-  width:100%; padding:11px 13px;
-  border:1.5px solid var(--border); border-radius:9px;
-  font-size:15px; font-family:inherit; direction:rtl;
-  transition:.2s;
-}
-input[type=text]:focus{outline:none; border-color:var(--blue); box-shadow:0 0 0 3px #ebf4ff}
-textarea{
-  width:100%; padding:11px 13px;
-  border:1.5px solid var(--border); border-radius:9px;
-  font-size:13px; font-family:inherit; direction:rtl;
-  min-height:85px; resize:vertical;
-}
-textarea:focus{outline:none; border-color:var(--blue)}
-
-/* ── grid ── */
-.grid-wrap{overflow-x:auto; margin-top:10px}
-.sg{width:100%; border-collapse:collapse; min-width:560px}
-.sg th,.sg td{border:1px solid var(--border)}
-.th-day{
-  background:var(--blue); color:white;
-  text-align:center; padding:9px 5px;
-  font-size:12px; font-weight:700;
-}
-.th-sh{
-  background:var(--slate); color:white;
-  text-align:center; padding:9px 7px;
-  width:78px; font-size:11px; font-weight:700;
-}
-.sh-hrs{font-size:9px; opacity:.7; display:block; margin-top:2px}
-.cm{background:var(--mint)} .ca{background:var(--amber)} .cn{background:var(--ice)}
-.cb-wrap{
-  display:flex; align-items:center; justify-content:center;
-  padding:8px 4px; cursor:pointer;
-}
-.cb-wrap input[type=checkbox]{
-  width:22px; height:22px; cursor:pointer; accent-color:var(--blue);
-}
-.cb-wrap:active{opacity:.7}
-
-/* ── validation bar ── */
-.vbar{
-  display:flex; gap:12px; flex-wrap:wrap;
-  margin-top:16px; padding:13px 15px;
-  background:#f7fafc; border-radius:9px;
-  border:1px solid var(--border);
-}
-.vi{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700}
-.badge{
-  display:inline-flex; align-items:center; justify-content:center;
-  min-width:28px; height:23px; padding:0 7px;
-  border-radius:12px; font-size:12px; font-weight:800; transition:.2s;
-}
-.ok{background:#c6f6d5; color:#276749}
-.err{background:#fed7d7; color:#c53030}
-.ico-ok{color:#48bb78; font-size:16px; font-weight:800}
-.ico-err{color:#fc8181; font-size:16px}
-
-/* ── submit ── */
-.btn-sub{
-  display:block; width:100%; padding:15px;
-  background:var(--blue); color:white; border:none;
-  border-radius:11px; font-size:17px; font-weight:800;
-  cursor:pointer; font-family:inherit; margin-top:18px; transition:.2s;
-}
-.btn-sub:disabled{background:#a0aec0; cursor:not-allowed}
-.btn-sub:not(:disabled):hover{background:#2c5282}
-.btn-sub:not(:disabled):active{transform:scale(.98)}
-
-/* ── loading ── */
-.loading-card{display:none; text-align:center; padding:50px 20px}
-.spinner{
-  width:52px; height:52px; border:5px solid #e2e8f0;
-  border-top-color:var(--blue); border-radius:50%;
-  animation:spin .8s linear infinite; margin:0 auto 18px;
-}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f4f8;direction:rtl;min-height:100vh;color:#1e293b}
+.hdr{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:white;padding:24px 20px;text-align:center}
+.hdr h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.hdr p{font-size:13px;opacity:.8}
+.card{background:white;border-radius:16px;padding:20px;margin:14px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.lbl{font-weight:700;font-size:14px;color:#334155;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.hint{font-weight:400;font-size:12px;color:#64748b}
+.name-inp{width:100%;padding:14px 16px;font-size:16px;font-family:inherit;direction:rtl;border:2px solid #e2e8f0;border-radius:12px;transition:.2s}
+.name-inp:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.exc-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff7ed;border:2px solid #fed7aa;border-radius:12px;cursor:pointer;transition:.2s;user-select:none;-webkit-tap-highlight-color:transparent}
+.exc-row.on{background:#fef9c3;border-color:#f59e0b}
+.exc-txt{flex:1}
+.exc-title{font-weight:700;font-size:14px}
+.exc-sub{font-size:12px;color:#64748b;margin-top:3px}
+.sw{width:44px;height:24px;background:#cbd5e1;border-radius:12px;position:relative;transition:.2s;flex-shrink:0}
+.sw::after{content:'';position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:2px;right:2px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.exc-row.on .sw{background:#f59e0b}
+.exc-row.on .sw::after{right:auto;left:2px}
+.grid-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sg{width:100%;border-collapse:separate;border-spacing:3px;min-width:390px}
+.dh{background:#334155;color:white;text-align:center;padding:8px 4px;border-radius:8px;font-size:12px;font-weight:700;vertical-align:bottom}
+.dd{font-size:10px;opacity:.65;margin-top:2px}
+.sl{text-align:center;padding:8px 4px;border-radius:8px;vertical-align:middle;width:68px}
+.sl .sn{font-weight:700;font-size:11px;color:white}
+.sl .sh{font-size:9px;color:rgba(255,255,255,.8);margin-top:2px}
+.sl-m{background:#059669}.sl-a{background:#d97706}.sl-n{background:#4f46e5}
+.sc{padding:2px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.sc-in{padding:12px 2px;border-radius:8px;border:2px solid;font-size:18px;text-align:center;line-height:1;transition:.12s}
+.sc:active .sc-in{transform:scale(.88)}
+.sc.m .sc-in{background:#f0fdf4;border-color:#bbf7d0;color:#059669}
+.sc.m.on .sc-in{background:#059669;border-color:#047857;color:white}
+.sc.a .sc-in{background:#fffbeb;border-color:#fde68a;color:#d97706}
+.sc.a.on .sc-in{background:#d97706;border-color:#b45309;color:white}
+.sc.n .sc-in{background:#eef2ff;border-color:#c7d2fe;color:#4f46e5}
+.sc.n.on .sc-in{background:#4f46e5;border-color:#4338ca;color:white}
+.vbar{display:flex;gap:8px}
+.vi{flex:1;padding:12px 8px;border-radius:12px;text-align:center;border:2px solid;transition:.2s}
+.vi.ok{background:#f0fdf4;border-color:#86efac}
+.vi.err{background:#fef2f2;border-color:#fca5a5}
+.vn{font-size:22px;font-weight:800;line-height:1}
+.vi.ok .vn{color:#16a34a}.vi.err .vn{color:#dc2626}
+.vl{font-size:11px;color:#64748b;margin-top:4px}
+.vr{font-size:10px;font-weight:700;margin-top:2px}
+.vi.ok .vr{color:#16a34a}.vi.err .vr{color:#dc2626}
+.notes-ta{width:100%;padding:12px 14px;font-size:14px;font-family:inherit;direction:rtl;border:2px solid #e2e8f0;border-radius:12px;min-height:80px;resize:vertical;transition:.2s}
+.notes-ta:focus{outline:none;border-color:#2563eb}
+.sub-btn{display:block;width:calc(100% - 28px);margin:0 14px 28px;padding:18px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:14px;font-size:18px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);transition:.2s}
+.sub-btn:disabled{background:#94a3b8;box-shadow:none;cursor:not-allowed}
+.sub-btn:not(:disabled):active{transform:scale(.98)}
+.spinner{width:48px;height:48px;border:4px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-card p{font-size:16px; color:var(--gray); font-weight:600}
-
-/* ── result ── */
-.result-card{display:none; padding:0}
-.res-top{
-  background:linear-gradient(135deg,var(--green),#22543d);
-  color:white; text-align:center; padding:36px 20px;
-  border-radius:14px 14px 0 0;
-}
-.res-top .big{font-size:64px; margin-bottom:12px}
-.res-top h2{font-size:24px; font-weight:800}
-.res-top p{font-size:14px; opacity:.85; margin-top:8px; line-height:1.5}
-.res-body{padding:22px 24px; text-align:center}
-.res-info{
-  background:#f7fafc; border:1.5px solid var(--border);
-  border-radius:9px; padding:14px 16px; font-size:14px;
-  color:var(--slate); margin-bottom:14px; line-height:1.7;
-}
-.btn-again{
-  display:inline-block; padding:11px 28px;
-  background:#f7fafc; color:var(--slate); border:1.5px solid var(--border);
-  border-radius:9px; font-size:14px; font-weight:600;
-  cursor:pointer; font-family:inherit;
-}
-.btn-again:hover{background:#edf2f7}
-
-/* ── error ── */
-.err-card{display:none; padding:0}
-.err-top{
-  background:linear-gradient(135deg,#c53030,#9b2c2c);
-  color:white; text-align:center; padding:30px 20px;
-  border-radius:14px 14px 0 0;
-}
-.err-top .big{font-size:52px; margin-bottom:10px}
-.err-top h2{font-size:20px}
-.err-body{padding:20px 22px; text-align:center}
-.err-msg{
-  background:#fff5f5; border:1.5px solid #feb2b2;
-  border-radius:9px; padding:12px; font-size:13px;
-  color:#c53030; margin-bottom:14px; direction:ltr; text-align:left;
-}
+.res-top{background:linear-gradient(135deg,#059669,#047857);color:white;padding:28px 20px;border-radius:14px 14px 0 0;margin:-20px -20px 20px;text-align:center}
+.res-top .ico{font-size:52px;margin-bottom:10px}
+.res-top h2{font-size:22px;font-weight:800}
+.res-top p{font-size:13px;opacity:.85;margin-top:6px}
+.res-info{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;font-size:14px;line-height:1.8;margin-bottom:14px}
+.err-top{background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;padding:26px 20px;border-radius:14px 14px 0 0;margin:-20px -20px 20px;text-align:center}
+.err-top .ico{font-size:46px;margin-bottom:10px}
+.err-top h2{font-size:20px;font-weight:800}
+.err-msg{background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:12px;font-size:13px;color:#dc2626;margin-bottom:14px;direction:ltr;text-align:left}
+.back-btn{padding:11px 24px;background:#f8fafc;color:#334155;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body>
 
 <div class="hdr">
-  <h1>&#128203; טופס זמינות משמרות</h1>
-  <p id="subtitle">מלא/י את הזמינות שלך לשבוע הקרוב</p>
+  <h1>📋 טופס זמינות משמרות</h1>
+  <p id="sub-title">מלא/י את הזמינות שלך לשבוע הקרוב</p>
 </div>
 
-<!-- FORM -->
-<div class="card" id="form-card">
-
-  <div style="margin-bottom:18px">
-    <label>&#128100; שמך המלא</label>
-    <input type="text" id="emp-name" placeholder="שם פרטי + משפחה" oninput="validate()">
+<div id="form-area">
+  <div class="card">
+    <div class="lbl">👤 שמך המלא</div>
+    <input class="name-inp" type="text" id="emp-name" placeholder="שם פרטי + שם משפחה" oninput="validate()">
   </div>
 
-  <label>
-    &#128197; בחר/י את המשמרות שאת/ה יכול/ה לעבוד
-    <span class="hint">(לפחות 10 משמרות)</span>
-  </label>
-
-  <div class="grid-wrap">
-    <table class="sg" id="grid">
-      <thead id="gh"></thead>
-      <tbody id="gb"></tbody>
-    </table>
-  </div>
-
-  <!-- validation bar -->
-  <div class="vbar">
-    <div class="vi">
-      <span id="ic-t" class="ico-err">&#10007;</span>
-      <span>סה"כ: <span class="badge err" id="b-t">0</span>&thinsp;/&thinsp;10+</span>
-    </div>
-    <div class="vi">
-      <span id="ic-n" class="ico-err">&#10007;</span>
-      <span>&#127769; לילה: <span class="badge err" id="b-n">0</span>&thinsp;/&thinsp;2+</span>
-    </div>
-    <div class="vi">
-      <span id="ic-w" class="ico-err">&#10007;</span>
-      <span>&#127955; סופ"ש: <span class="badge err" id="b-w">0</span>&thinsp;/&thinsp;2+
-        <span class="hint">&nbsp;(שישי–שבת)</span>
-      </span>
+  <div class="card" style="padding:14px">
+    <div class="lbl" style="margin-bottom:10px">⚠️ שבוע חריג</div>
+    <div class="exc-row" id="exc-row" onclick="toggleExc()">
+      <div class="exc-txt">
+        <div class="exc-title">אני פחות זמין/ה השבוע</div>
+        <div class="exc-sub">מאפשר מילוי פחות מ-10 משמרות — המנהל יראה את זה</div>
+      </div>
+      <div class="sw"></div>
     </div>
   </div>
 
-  <div style="margin-top:18px">
-    <label>&#128172; הערות / בקשות מיוחדות
-      <span class="hint">(אופציונלי)</span>
-    </label>
-    <textarea id="notes"
-      placeholder="לדוגמה: מבקש לא לסדר ביום ד׳, מעדיף משמרות בוקר, לא יכול בשישי הקרוב..."></textarea>
+  <div class="card">
+    <div class="lbl">📅 משמרות שאת/ה יכול/ה לעבוד</div>
+    <div class="grid-scroll">
+      <table class="sg" id="grid"></table>
+    </div>
   </div>
 
-  <button class="btn-sub" id="sub-btn" disabled onclick="doSubmit()">
-    &#9993;&ensp;שלח זמינות למנהל
-  </button>
+  <div class="card">
+    <div class="vbar">
+      <div class="vi err" id="vt">
+        <div class="vn" id="vcnt-t">0</div>
+        <div class="vl">סה"כ משמרות</div>
+        <div class="vr" id="vreq-t">מינימום 10</div>
+      </div>
+      <div class="vi err" id="vn">
+        <div class="vn" id="vcnt-n">0</div>
+        <div class="vl">🌙 לילה</div>
+        <div class="vr">מינימום 2</div>
+      </div>
+      <div class="vi err" id="vw">
+        <div class="vn" id="vcnt-w">0</div>
+        <div class="vl">🏖️ סופ"ש</div>
+        <div class="vr">מינימום 2</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">💬 הערות <span class="hint">(אופציונלי)</span></div>
+    <textarea class="notes-ta" id="notes" placeholder="לדוגמה: לא יכול/ה ביום ד', מעדיפ/ה בוקר..."></textarea>
+  </div>
+
+  <button class="sub-btn" id="sub-btn" disabled onclick="doSubmit()">✉️&nbsp; שלח זמינות למנהל</button>
 </div>
 
-<!-- LOADING -->
-<div class="card loading-card" id="loading-card">
+<div class="card" id="load-card" style="display:none;text-align:center;padding:40px 20px;margin:14px">
   <div class="spinner"></div>
-  <p>שולח למנהל...</p>
+  <p style="font-size:15px;color:#64748b;font-weight:600">שולח למנהל...</p>
 </div>
 
-<!-- RESULT -->
-<div class="card result-card" id="result-card">
-  <div class="res-top">
-    <div class="big">&#9989;</div>
-    <h2>הזמינות נשלחה!</h2>
-    <p id="res-msg">המנהל יצור את סידור העבודה בקרוב</p>
-  </div>
-  <div class="res-body">
-    <div class="res-info" id="res-info"></div>
-    <button class="btn-again" onclick="goBack()">&#8592; שלח עובד אחר</button>
-  </div>
+<div class="card" id="res-card" style="display:none;margin:14px">
+  <div class="res-top"><div class="ico">✅</div><h2>הזמינות נשלחה!</h2><p>המנהל יצור סידור עבודה בקרוב</p></div>
+  <div class="res-info" id="res-info"></div>
+  <button class="back-btn" onclick="resetForm()">← שלח עובד אחר</button>
 </div>
 
-<!-- ERROR -->
-<div class="card err-card" id="err-card">
-  <div class="err-top">
-    <div class="big">&#10060;</div>
-    <h2>השליחה נכשלה</h2>
-  </div>
-  <div class="err-body">
-    <div class="err-msg" id="err-msg"></div>
-    <button class="btn-again" onclick="goBack()">&#8592; נסה שנית</button>
-  </div>
+<div class="card" id="err-card" style="display:none;margin:14px">
+  <div class="err-top"><div class="ico">❌</div><h2>השליחה נכשלה</h2></div>
+  <div class="err-msg" id="err-msg"></div>
+  <button class="back-btn" onclick="resetForm()">← נסה שנית</button>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  ★ הדבק כאן את ה-URL שקיבלת מ-Google Apps Script
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwzoFfO0325Rb_dbJyD686XQ25W1ifnLn5N3-id-vJpPFMUehkwr_4-2Rudwladuiud/exec';
-// ═══════════════════════════════════════════════════════
+const DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const SHIFTS = [
+  {k:'בוקר', l:'☀️ בוקר', h:'06:00–14:00', c:'m'},
+  {k:'צהריים', l:'🌤 צהריים', h:'14:00–22:00', c:'a'},
+  {k:'לילה', l:'🌙 לילה', h:'22:00–06:00', c:'n'}
+];
+const DK = {'ראשון':'א','שני':'ב','שלישי':'ג','רביעי':'ד','חמישי':'ה','שישי':'ו','שבת':'ש'};
+const SK = {'בוקר':'ב','צהריים':'צ','לילה':'ל'};
 
-const DAYS   = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-const SHIFTS = ['בוקר','צהריים','לילה'];
-const HRS    = {'בוקר':'06:00–14:00','צהריים':'14:00–22:00','לילה':'22:00–06:00'};
-const WKND   = new Set(['שישי','שבת']);
-const CLS    = {'בוקר':'cm','צהריים':'ca','לילה':'cn'};
-const SH_KEY = {'בוקר':'ב','צהריים':'צ','לילה':'ל'};
-const DAY_KEY= {'ראשון':'א','שני':'ב','שלישי':'ג','רביעי':'ד','חמישי':'ה','שישי':'ו','שבת':'ש'};
+const P = new URLSearchParams(location.search);
+const weekP = P.get('week') || '';
+const nameP = P.get('name') || '';
+const teamP = P.get('team') || 'default';
+const startP = P.get('start') || '';
 
-// URL params
-const urlParams = new URLSearchParams(window.location.search);
-const weekParam = urlParams.get('week') || '';
-if (weekParam) document.getElementById('subtitle').textContent = 'שבוע: ' + weekParam;
-const nameParam = urlParams.get('name') || '';
-if (nameParam) document.getElementById('emp-name').value = decodeURIComponent(nameParam);
-const teamParam = urlParams.get('team') || 'default';
-
-// --- parse start date → dates per column ---
-function parseStart(str) {
-  const p = str.split('.');
-  if (p.length !== 3) return null;
-  return new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
+function parseStart(s) {
+  const p = s.split('.');
+  return p.length === 3 ? new Date(+p[2], +p[1]-1, +p[0]) : null;
 }
 function fmtD(d) {
-  return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');
+  return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0');
 }
-const startParam = urlParams.get('start') || '';
-const startDate  = startParam ? parseStart(startParam) : null;
-const weekDates  = startDate
-  ? Array.from({length:7}, (_,i) => { const d=new Date(startDate); d.setDate(startDate.getDate()+i); return d; })
-  : null;
 
-// --- build grid ---
-const head = document.getElementById('gh');
-const body = document.getElementById('gb');
+const sd = startP ? parseStart(startP) : null;
+const wDates = sd ? Array.from({length:7}, (_,i) => {
+  const d = new Date(sd); d.setDate(sd.getDate()+i); return d;
+}) : null;
 
-const hr = document.createElement('tr');
-hr.innerHTML = '<th class="th-sh"></th>' +
-  DAYS.map((d,i) => '<th class="th-day">' + d +
-    (weekDates ? '<span class="dd">' + fmtD(weekDates[i]) + '</span>' : '') +
-    '</th>').join('');
-head.appendChild(hr);
+if (sd && wDates) document.getElementById('sub-title').textContent = 'שבוע: ' + fmtD(sd) + ' – ' + fmtD(wDates[6]);
+else if (weekP) document.getElementById('sub-title').textContent = 'שבוע: ' + weekP;
+if (nameP) document.getElementById('emp-name').value = decodeURIComponent(nameP);
 
-SHIFTS.forEach(sh => {
-  const tr = document.createElement('tr');
-  let cells = '<td class="th-sh">' + sh + '<span class="sh-hrs">' + HRS[sh] + '</span></td>';
-  DAYS.forEach(d => {
-    const id = d + '__' + sh;
-    cells += '<td class="' + CLS[sh] + '">'
-           + '<div class="cb-wrap" onclick="toggle(\'' + id + '\')">'
-           + '<input type="checkbox" id="' + id + '"'
-           + ' data-day="' + d + '" data-shift="' + sh + '"'
-           + ' onchange="validate()" onclick="event.stopPropagation()">'
-           + '</div></td>';
+const sel = new Set();
+let exc = false;
+
+function toggleExc() {
+  exc = !exc;
+  document.getElementById('exc-row').classList.toggle('on', exc);
+  document.getElementById('vreq-t').textContent = exc ? 'מינימום 5 (חריג)' : 'מינימום 10';
+  validate();
+}
+
+function buildGrid() {
+  let h = '<thead><tr><th style="width:68px"></th>';
+  DAYS.forEach((d,i) => {
+    h += `<th class="dh">${d}${wDates ? `<div class="dd">${fmtD(wDates[i])}</div>` : ''}</th>`;
   });
-  tr.innerHTML = cells;
-  body.appendChild(tr);
-});
+  h += '</tr></thead><tbody>';
+  SHIFTS.forEach(sh => {
+    h += `<tr><td class="sl sl-${sh.c}"><div class="sn">${sh.l}</div><div class="sh">${sh.h}</div></td>`;
+    DAYS.forEach(d => {
+      const id = d + '__' + sh.k;
+      h += `<td class="sc ${sh.c}" id="${id}" onclick="tog('${id}')"><div class="sc-in" id="${id}i">＋</div></td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  document.getElementById('grid').innerHTML = h;
+}
 
-function toggle(id) {
-  const cb = document.getElementById(id);
-  cb.checked = !cb.checked;
+function tog(id) {
+  if (sel.has(id)) {
+    sel.delete(id);
+    document.getElementById(id).classList.remove('on');
+    document.getElementById(id+'i').textContent = '＋';
+  } else {
+    sel.add(id);
+    document.getElementById(id).classList.add('on');
+    document.getElementById(id+'i').textContent = '✓';
+  }
   validate();
 }
 
 function validate() {
-  const cbs    = [...document.querySelectorAll('#grid input:checked')];
-  const total  = cbs.length;
-  const nights = cbs.filter(c => c.dataset.shift === 'לילה').length;
-  const wknds  = cbs.filter(c => WKND.has(c.dataset.day)).length;
-  const name   = document.getElementById('emp-name').value.trim();
-
-  function upd(bid, iid, val, min) {
-    const ok = val >= min;
-    const b  = document.getElementById(bid);
-    b.textContent = val;
-    b.className = 'badge ' + (ok ? 'ok' : 'err');
-    const ic = document.getElementById(iid);
-    ic.innerHTML = ok ? '&#10003;' : '&#10007;';
-    ic.className = ok ? 'ico-ok' : 'ico-err';
+  const tot = sel.size;
+  const nit = [...sel].filter(k => k.includes('לילה')).length;
+  const wkn = [...sel].filter(k => k.startsWith('שישי') || k.startsWith('שבת')).length;
+  const nm = document.getElementById('emp-name').value.trim();
+  const minT = exc ? 5 : 10;
+  function upd(id, cid, v, m) {
+    const ok = v >= m;
+    document.getElementById(id).className = 'vi ' + (ok ? 'ok' : 'err');
+    document.getElementById(cid).textContent = v;
     return ok;
   }
-  const t = upd('b-t', 'ic-t', total,  10);
-  const n = upd('b-n', 'ic-n', nights,  2);
-  const w = upd('b-w', 'ic-w', wknds,   2);
-  document.getElementById('sub-btn').disabled = !(t && n && w && name.length > 1);
+  const a = upd('vt','vcnt-t',tot,minT), b = upd('vn','vcnt-n',nit,2), c = upd('vw','vcnt-w',wkn,2);
+  document.getElementById('sub-btn').disabled = !(a && b && c && nm.length > 1);
 }
 
-function buildMessage() {
-  const name  = document.getElementById('emp-name').value.trim();
-  const cbs   = [...document.querySelectorAll('#grid input:checked')];
-  const byDay = {};
-  cbs.forEach(c => {
-    const d = c.dataset.day;
-    if (!byDay[d]) byDay[d] = [];
-    byDay[d].push(SH_KEY[c.dataset.shift]);
-  });
-  const parts = DAYS
-    .filter(d => byDay[d] && byDay[d].length)
-    .map(d => DAY_KEY[d] + '-' + byDay[d].join(','));
-  return name + ': ' + parts.join(', ');
+function buildMsg() {
+  const by = {};
+  for (const id of sel) {
+    const [d, s] = id.split('__');
+    (by[d] = by[d] || []).push(SK[s]);
+  }
+  const nm = document.getElementById('emp-name').value.trim();
+  return nm + ': ' + DAYS.filter(d => by[d]).map(d => DK[d] + '-' + by[d].join(',')).join(', ');
 }
 
-function show(id) {
-  ['form-card','loading-card','result-card','err-card']
-    .forEach(c => document.getElementById(c).style.display = (c===id ? 'block' : 'none'));
-  window.scrollTo(0, 0);
+function showState(s) {
+  document.getElementById('form-area').style.display = s === 'form' ? '' : 'none';
+  document.getElementById('load-card').style.display = s === 'load' ? 'block' : 'none';
+  document.getElementById('res-card').style.display = s === 'res' ? 'block' : 'none';
+  document.getElementById('err-card').style.display = s === 'err' ? 'block' : 'none';
+  scrollTo(0, 0);
 }
 
 async function doSubmit() {
-  if (SCRIPT_URL === 'הדבק-כאן-את-ה-URL') {
-    alert('שגיאה: לא הוגדר SCRIPT_URL. פנה למנהל.');
-    return;
-  }
-
-  const name  = document.getElementById('emp-name').value.trim();
+  const nm = document.getElementById('emp-name').value.trim();
   const notes = document.getElementById('notes').value.trim();
-  const msg   = buildMessage();
-
-  show('loading-card');
-
+  const fullNotes = (exc ? '[שבוע חריג] ' : '') + notes;
+  showState('load');
   try {
-    // GET עם פרמטרים — עובד עם no-cors בלי בעיות redirect
-    const params = new URLSearchParams({
-      action: 'submit',
-      name:    name,
-      message: msg,
-      week:    weekParam,
-      notes:   notes,
-      team:    teamParam
-    });
-    await fetch(SCRIPT_URL + '?' + params.toString(), {
-      method: 'GET',
-      mode:   'no-cors'
-    });
-
-    // עם no-cors לא ניתן לקרוא את התגובה — אבל הבקשה עברה
-    const cbs    = [...document.querySelectorAll('#grid input:checked')];
-    const nights = cbs.filter(c => c.dataset.shift === 'לילה').length;
-    const wknds  = cbs.filter(c => WKND.has(c.dataset.day)).length;
+    const p = new URLSearchParams({action:'submit', name:nm, message:buildMsg(), week:weekP, notes:fullNotes, team:teamP});
+    await fetch(SCRIPT_URL + '?' + p, {method:'GET', mode:'no-cors'});
+    const nit = [...sel].filter(k => k.includes('לילה')).length;
+    const wkn = [...sel].filter(k => k.startsWith('שישי') || k.startsWith('שבת')).length;
     document.getElementById('res-info').innerHTML =
-      '<strong>' + name + '</strong> — ' + cbs.length + ' משמרות<br>' +
-      '&#127769; לילה: ' + nights + ' &nbsp;|&nbsp; &#127955; סופ"ש: ' + wknds;
-    show('result-card');
-  } catch (err) {
-    document.getElementById('err-msg').textContent = err.message;
-    show('err-card');
+      `<strong>${nm}</strong> — ${sel.size} משמרות<br>🌙 לילה: ${nit} &nbsp;|&nbsp; 🏖️ סופ"ש: ${wkn}` +
+      (exc ? '<br><span style="color:#d97706;font-weight:700">⚠️ שבוע חריג — המנהל יודע</span>' : '');
+    showState('res');
+  } catch(e) {
+    document.getElementById('err-msg').textContent = e.message;
+    showState('err');
   }
 }
 
-function goBack() {
+function resetForm() {
   document.getElementById('emp-name').value = '';
-  document.querySelectorAll('#grid input:checked').forEach(c => c.checked = false);
+  sel.clear(); exc = false;
+  document.getElementById('exc-row').classList.remove('on');
   document.getElementById('notes').value = '';
-  validate();
-  show('form-card');
+  document.getElementById('vreq-t').textContent = 'מינימום 10';
+  buildGrid(); validate(); showState('form');
 }
 
+buildGrid();
 validate();
+if (nameP) setTimeout(validate, 100);
 </script>
 </body>
 </html>
