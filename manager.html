@@ -428,12 +428,26 @@ async function loadAndGenerate() {
   if (!iso) { alert('בחר תאריך יום ראשון של השבוע'); return; }
   setStatus('<span class="s-loading">⏳ טוען נתוני עובדים...</span>');
   try {
-    const subs = await gasGet('list');
-    if (!Array.isArray(subs) || subs.length===0) {
+    const allSubs = await gasGet('list');
+    if (!Array.isArray(allSubs) || allSubs.length===0) {
       setStatus('<span class="s-empty">⚠️ אין הגשות עדיין — שלח את הקישור לעובדים</span>');
       document.getElementById('output').innerHTML = '';
       return;
     }
+    // סינון לפי שבוע נבחר
+    const weekStr = getStartStr(iso);
+    const weekSubs = allSubs.filter(s => s.week === weekStr);
+    if (weekSubs.length === 0) {
+      setStatus(`<span class="s-empty">⚠️ אין הגשות לשבוע ${weekStr} — שלח קישורים לעובדים</span>`);
+      document.getElementById('output').innerHTML = '';
+      return;
+    }
+    // הסרת כפילויות — רק ההגשה האחרונה של כל עובד
+    const latestMap = {};
+    weekSubs.forEach(s => {
+      if (!latestMap[s.name] || s.timestamp > latestMap[s.name].timestamp) latestMap[s.name] = s;
+    });
+    const subs = Object.values(latestMap);
     const messages = subs.map(s => s.message).join('\n');
     const notes    = subs.filter(s => s.notes).map(s => s.name+': '+s.notes);
     const excCount = subs.filter(s => s.notes && s.notes.includes('[שבוע חריג]')).length;
@@ -681,7 +695,8 @@ function copyLink() {
   const iso = document.getElementById('weekStart').value;
   if (!iso) { alert('בחר תאריך שבוע קודם'); return; }
   const teamParam = TEAM_ID !== 'default' ? '&team='+encodeURIComponent(TEAM_ID) : '';
-  const url = getBaseUrl() + 'employee.html?start=' + getStartStr(iso) + teamParam;
+  const weekStr = getStartStr(iso);
+  const url = getBaseUrl() + 'employee.html?start=' + weekStr + '&week=' + weekStr + teamParam;
   navigator.clipboard.writeText(url)
     .then(() => alert('✓ הקישור הועתק!\n\n' + url))
     .catch(() => prompt('העתק:', url));
@@ -735,7 +750,8 @@ function sendWhatsApp(idx) {
   const iso = document.getElementById('weekStart').value;
   if (!iso) { alert('בחר תאריך שבוע קודם'); return; }
   const teamParam = TEAM_ID !== 'default' ? '&team='+encodeURIComponent(TEAM_ID) : '';
-  const url = getBaseUrl() + 'employee.html?start=' + getStartStr(iso) + '&name=' + encodeURIComponent(c.name) + teamParam;
+  const weekStr = getStartStr(iso);
+  const url = getBaseUrl() + 'employee.html?start=' + weekStr + '&week=' + weekStr + '&name=' + encodeURIComponent(c.name) + teamParam;
   const text = `היי ${c.name}! 👋\nאנא מלא/י את זמינותך למשמרות לשבוע ${getStartStr(iso)}:\n${url}`;
   const phone = c.phone.replace(/[^0-9]/g,'').replace(/^0/,'972');
   window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(text), '_blank');
