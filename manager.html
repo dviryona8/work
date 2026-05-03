@@ -442,11 +442,10 @@ async function loadAndGenerate() {
       document.getElementById('output').innerHTML = '';
       return;
     }
-    // הסרת כפילויות — רק ההגשה האחרונה של כל עובד
+    // הסרת כפילויות — תמיד שומר רק את ההגשה האחרונה לכל עובד
+    // (שורות מגיעות מ-Sheets לפי סדר כרונולוגי — האחרונה מנצחת)
     const latestMap = {};
-    weekSubs.forEach(s => {
-      if (!latestMap[s.name] || s.timestamp > latestMap[s.name].timestamp) latestMap[s.name] = s;
-    });
+    weekSubs.forEach(s => { latestMap[s.name.trim()] = s; });
     const subs = Object.values(latestMap);
     const messages = subs.map(s => s.message).join('\n');
     const notes    = subs.filter(s => s.notes).map(s => s.name+': '+s.notes);
