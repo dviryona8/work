@@ -110,12 +110,12 @@ body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f4f8;direct
       <div class="vi err" id="vn">
         <div class="vn" id="vcnt-n">0</div>
         <div class="vl">🌙 לילה</div>
-        <div class="vr">מינימום 2</div>
+        <div class="vr" id="vreq-n">מינימום 2</div>
       </div>
       <div class="vi err" id="vw">
         <div class="vn" id="vcnt-w">0</div>
         <div class="vl">🏖️ סופ"ש</div>
-        <div class="vr">מינימום 2</div>
+        <div class="vr" id="vreq-w">מינימום 2</div>
       </div>
     </div>
   </div>
@@ -185,7 +185,9 @@ let exc = false;
 function toggleExc() {
   exc = !exc;
   document.getElementById('exc-row').classList.toggle('on', exc);
-  document.getElementById('vreq-t').textContent = exc ? 'מינימום 5 (חריג)' : 'מינימום 10';
+  document.getElementById('vreq-t').textContent = exc ? 'מינימום 1 (חריג)' : 'מינימום 10';
+  document.getElementById('vreq-n').textContent = exc ? 'לא חובה' : 'מינימום 2';
+  document.getElementById('vreq-w').textContent = exc ? 'לא חובה' : 'מינימום 2';
   validate();
 }
 
@@ -225,14 +227,16 @@ function validate() {
   const nit = [...sel].filter(k => k.includes('לילה')).length;
   const wkn = [...sel].filter(k => k.startsWith('שישי') || k.startsWith('שבת')).length;
   const nm = document.getElementById('emp-name').value.trim();
-  const minT = exc ? 5 : 10;
+  const minT = exc ? 1 : 10;
+  const minN = exc ? 0 : 2;
+  const minW = exc ? 0 : 2;
   function upd(id, cid, v, m) {
     const ok = v >= m;
     document.getElementById(id).className = 'vi ' + (ok ? 'ok' : 'err');
     document.getElementById(cid).textContent = v;
     return ok;
   }
-  const a = upd('vt','vcnt-t',tot,minT), b = upd('vn','vcnt-n',nit,2), c = upd('vw','vcnt-w',wkn,2);
+  const a = upd('vt','vcnt-t',tot,minT), b = upd('vn','vcnt-n',nit,minN), c = upd('vw','vcnt-w',wkn,minW);
   document.getElementById('sub-btn').disabled = !(a && b && c && nm.length > 1);
 }
 
