@@ -14,6 +14,20 @@
   --dg:#22c55e;--da:#f59e0b;--dn:#6366f1;
   --pos1:#1d4ed8;--pos2:#7c3aed;
 }
+/* Position toggles */
+.pos-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:12px 14px;background:#f0f4ff;border-radius:10px;border:1px solid #c7d2fe}
+.pos-bar-lbl{font-size:12px;font-weight:700;color:var(--slate)}
+.pos-tog{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid var(--border);background:#f1f5f9;color:var(--gray);transition:.15s}
+.pos-tog.p1{border-color:#93c5fd;background:#dbeafe;color:#1d4ed8}
+.pos-tog.p2{border-color:#c4b5fd;background:#ede9fe;color:#7c3aed}
+.pos-tog.off{background:#f1f5f9!important;color:var(--gray)!important;border-color:var(--border)!important;text-decoration:line-through;opacity:.6}
+/* Employee position selector */
+.epos-sel{display:flex;gap:3px;margin-top:5px}
+.epos-btn{padding:3px 7px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid var(--border);background:white;color:var(--gray);transition:.12s}
+.epos-btn:hover{background:#f1f5f9}
+.epos-btn.act-both{background:#dcfce7;border-color:#86efac;color:#166534}
+.epos-btn.act-1{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8}
+.epos-btn.act-2{background:#ede9fe;border-color:#c4b5fd;color:#7c3aed}
 body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f4f8;color:var(--slate);direction:rtl;min-height:100vh}
 .app-hdr{background:linear-gradient(135deg,var(--navy),#1d4ed8);color:white;padding:18px 28px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .app-hdr h1{font-size:22px;font-weight:800}
@@ -256,6 +270,12 @@ th,td{border:1px solid var(--border)}
       <button class="btn btn-settings" onclick="openPwChange()">🔑 שנה סיסמה</button>
     </div>
   </div>
+  <!-- Position active toggles -->
+  <div class="pos-bar">
+    <span class="pos-bar-lbl">🏢 עמדות פעילות השבוע:</span>
+    <button id="tog-נגבה" class="pos-tog p1" onclick="togglePos('נגבה')">🔵 נגבה — פעילה</button>
+    <button id="tog-אשקלון" class="pos-tog p2" onclick="togglePos('אשקלון')">🟣 אשקלון — פעילה</button>
+  </div>
   <div class="status-bar" id="status-bar">
     <span class="s-empty">⬤ ממתין — לחץ "טען וצור סידור"</span>
   </div>
@@ -278,7 +298,9 @@ let G = {
   notes: [], prefs: {}, dates: null, subs: [],
   dayMode:  {נגבה:{}, אשקלון:{}},   // per position per day
   sched12h: {נגבה:{}, אשקלון:{}},   // per position per day
-  editCtx: null
+  editCtx: null,
+  activePos: new Set(['נגבה', 'אשקלון']), // עמדות פעילות השבוע
+  empPos: {}  // {empName: 'both'|'נגבה'|'אשקלון'}
 };
 
 // ── URL helpers ───────────────────────────────────────────────
@@ -367,7 +389,7 @@ function violates24h(assigned,dayIdx,shift){
 
 // ── Multi-position scheduler ──────────────────────────────────
 function scheduleMulti(avail, prefs) {
-  // אתחול טבלאות שיבוץ לכל עמדה
+  // אתחול טבלאות שיבוץ לכל עמדה (גם לא-פעילות — ריקות)
   const schedules = {};
   POSITIONS.forEach(pos => {
     schedules[pos] = Object.fromEntries(DAYS.map(d=>[d,Object.fromEntries(SHIFTS.map(s=>[s,null]))]));
@@ -382,17 +404,24 @@ function scheduleMulti(avail, prefs) {
     const b=(prefs[emp]||{})[shift]||1; const nb=(prefs[emp]||{})['לילה']||1;
     return shift==='לילה'?(nightH[emp]/nightCap[emp])/b:(hours[emp]/b)*Math.pow(nb,.4);
   }
+  // בדיקה אם עובד מורשה לעמדה מסוימת
+  function empAllowed(emp, pos){
+    const choice = G.empPos[emp] || 'both';
+    return choice === 'both' || choice === pos;
+  }
 
   for(const shift of['לילה','בוקר','צהריים']){
     for(const[dayIdx,day]of DAYS.entries()){
       for(const pos of POSITIONS){
+        if(!G.activePos.has(pos)) continue; // עמדה לא פעילה — דלג
         // עובדים שכבר שובצו לאותה משמרת ואותו יום בעמדה אחרת
         const takenSlot = new Set(POSITIONS.map(p=>schedules[p][day][shift]).filter(Boolean));
         const cands = Object.keys(avail)
           .filter(e=>
             (avail[e][day]||[]).includes(shift) &&
             !violates24h(assigned[e],dayIdx,shift) && // בדיקת 24 שעות גלובלית
-            !takenSlot.has(e) // לא ניתן לעבוד באותה משמרת בשתי עמדות
+            !takenSlot.has(e) && // לא ניתן לעבוד באותה משמרת בשתי עמדות
+            empAllowed(e, pos)   // עובד מורשה לעמדה זו
           )
           .sort((a,b2)=>score(a,shift)-score(b2,shift));
         if(cands.length){
@@ -406,6 +435,41 @@ function scheduleMulti(avail, prefs) {
     }
   }
   return{schedules,hours,nightH};
+}
+
+// ── Toggle position active/off ────────────────────────────────
+function togglePos(pos){
+  if(G.activePos.has(pos)){
+    if(G.activePos.size===1){alert('יש להשאיר לפחות עמדה אחת פעילה');return;}
+    G.activePos.delete(pos);
+  }else{
+    G.activePos.add(pos);
+  }
+  // עדכון כפתורים
+  POSITIONS.forEach(p=>{
+    const btn=document.getElementById('tog-'+p);
+    if(!btn)return;
+    const isActive=G.activePos.has(p);
+    const cls=p==='נגבה'?'p1':'p2';
+    btn.className='pos-tog '+(isActive?cls:'off');
+    btn.textContent=(p==='נגבה'?'🔵':'🟣')+' '+p+' — '+(isActive?'פעילה':'מושבתת');
+  });
+  if(G.avail){reScheduleAndRender();}
+}
+
+// ── Set employee position assignment ─────────────────────────
+function setEmpPos(emp, choice){
+  G.empPos[emp]=choice;
+  if(G.avail){reScheduleAndRender();}
+}
+
+// ── Re-run scheduler and re-render (keeps dayMode) ───────────
+function reScheduleAndRender(){
+  const{schedules,hours,nightH}=scheduleMulti(G.avail,G.prefs);
+  G.schedules=schedules; G.hours=hours; G.nightH=nightH;
+  // נקה sched12h רק לעמדות שהתאפסו
+  POSITIONS.forEach(p=>{if(!G.sched12h[p])G.sched12h[p]={};});
+  renderOutput();
 }
 
 // ── 12h mode (per position per day) ──────────────────────────
@@ -462,7 +526,10 @@ async function clearData(){
     setStatus('<span class="s-empty">⬤ הנתונים נמחקו. מוכן לשבוע הבא.</span>');
     document.getElementById('output').innerHTML='';
     G={schedules:null,avail:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,subs:[],
-       dayMode:{נגבה:{},אשקלון:{}},sched12h:{נגבה:{},אשקלון:{}},editCtx:null};
+       dayMode:{נגבה:{},אשקלון:{}},sched12h:{נגבה:{},אשקלון:{}},editCtx:null,
+       activePos:new Set(['נגבה','אשקלון']),empPos:{}};
+    // איפוס כפתורי עמדות
+    POSITIONS.forEach(p=>{const btn=document.getElementById('tog-'+p);if(btn){const cls=p==='נגבה'?'p1':'p2';btn.className='pos-tog '+cls;btn.textContent=(p==='נגבה'?'🔵':'🟣')+' '+p+' — פעילה';}});
   }catch(e){setStatus(`<span style="color:var(--red)">שגיאה: ${e.message}</span>`);}
 }
 function setStatus(html){document.getElementById('status-bar').innerHTML=html;}
@@ -472,6 +539,7 @@ function renderSchedule(iso,messagesText,extraNotes,subs){
   const dates=getWeekDates(iso);
   const avail=parseMessages(messagesText);
   const prefs=parsePrefs(document.getElementById('prefs-txt').value);
+  G.empPos={}; // איפוס שיוך עמדות לעובדים בכל טעינה חדשה
   const{schedules,hours,nightH}=scheduleMulti(avail,prefs);
   G={...G,schedules,avail,hours,nightH,iso,notes:extraNotes,prefs,dates,subs:subs||[]};
   renderOutput();
@@ -540,10 +608,19 @@ function renderOutput(){
       return`<td class="td-av">${dots}</td>`;
     }).join('');
     const totalAssigned=POSITIONS.reduce((sum,pos)=>sum+DAYS.reduce((s2,d)=>s2+SHIFTS.filter(sh=>schedules[pos][d][sh]===emp).length,0),0);
+    // כפתורי שיוך עמדה לעובד
+    const epChoice=G.empPos[emp]||'both';
+    const empEsc=emp.replace(/'/g,"\\'");
+    const posSelHTML=`<div class="epos-sel no-print">
+      <button class="epos-btn${epChoice==='נגבה'?' act-1':''}" onclick="setEmpPos('${empEsc}','נגבה')" title="רק נגבה">נגבה</button>
+      <button class="epos-btn${epChoice==='both'?' act-both':''}" onclick="setEmpPos('${empEsc}','both')" title="שתי עמדות">שניהם</button>
+      <button class="epos-btn${epChoice==='אשקלון'?' act-2':''}" onclick="setEmpPos('${empEsc}','אשקלון')" title="רק אשקלון">אשקלון</button>
+    </div>`;
     return`<tr>
       <td class="td-emp">
         <div class="emp-nm">${emp}${isExc?' <span class="exc-badge">⚠️ חריג</span>':''}</div>
         <div class="emp-st">${totalAssigned*8}ש׳ | ${(nightH[emp]||0)/8} לילות 🌙</div>
+        ${posSelHTML}
       </td>${cells}</tr>`;
   }).join('');
 
@@ -571,18 +648,18 @@ function renderOutput(){
     </div>
 
     <!-- עמדת נגבה -->
-    <div class="sched-card" id="card-נגבה">
+    ${G.activePos.has('נגבה')?`<div class="sched-card" id="card-נגבה">
       <div class="card-title-bar pos1-bar"><h2>🏢 עמדת נגבה</h2><span class="wk">שבוע: ${wLabel}</span></div>
       <table><thead><tr>${buildDayThs('נגבה')}</tr></thead><tbody>${buildSchedRows('נגבה')}</tbody></table>
       ${legend}
-    </div>
+    </div>`:'<div class="sched-card" id="card-נגבה" style="opacity:.4;text-align:center;padding:18px;color:var(--gray)">🔵 עמדת נגבה — מושבתת השבוע</div>'}
 
     <!-- עמדת אשקלון -->
-    <div class="sched-card" id="card-אשקלון">
+    ${G.activePos.has('אשקלון')?`<div class="sched-card" id="card-אשקלון">
       <div class="card-title-bar pos2-bar"><h2>🏢 עמדת אשקלון</h2><span class="wk">שבוע: ${wLabel}</span></div>
       <table><thead><tr>${buildDayThs('אשקלון')}</tr></thead><tbody>${buildSchedRows('אשקלון')}</tbody></table>
       ${legend}
-    </div>
+    </div>`:'<div class="sched-card" id="card-אשקלון" style="opacity:.4;text-align:center;padding:18px;color:var(--gray)">🟣 עמדת אשקלון — מושבתת השבוע</div>'}
 
     <!-- זמינות ואיזון -->
     <div class="sched-card mgr-only" id="av-card">
@@ -595,11 +672,11 @@ function renderOutput(){
 
     <!-- כרטיס לעובדים (הדפסה) -->
     <div class="sched-card" id="emp-card" style="display:none">
-      <div class="card-title-bar pos1-bar"><h2>📋 סידור שבועי — נגבה</h2><span class="wk">שבוע: ${wLabel}</span></div>
+      ${G.activePos.has('נגבה')?`<div class="card-title-bar pos1-bar"><h2>📋 סידור שבועי — נגבה</h2><span class="wk">שבוע: ${wLabel}</span></div>
       <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${buildSimpleRows('נגבה')}</tbody></table>
-      <div style="height:16px"></div>
-      <div class="card-title-bar pos2-bar" style="margin-top:10px"><h2>📋 סידור שבועי — אשקלון</h2><span class="wk">שבוע: ${wLabel}</span></div>
-      <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${buildSimpleRows('אשקלון')}</tbody></table>
+      <div style="height:16px"></div>`:''}
+      ${G.activePos.has('אשקלון')?`<div class="card-title-bar pos2-bar" style="margin-top:10px"><h2>📋 סידור שבועי — אשקלון</h2><span class="wk">שבוע: ${wLabel}</span></div>
+      <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${buildSimpleRows('אשקלון')}</tbody></table>`:''}
     </div>`;
 }
 
