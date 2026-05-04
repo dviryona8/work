@@ -167,6 +167,7 @@ th,td{border:1px solid var(--border)}
 .edit-item-unavail{color:var(--gray);font-style:italic;font-size:12px}
 .edit-sec-lbl{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;padding:5px 4px 2px;border-top:1px solid var(--border);margin-top:4px}
 @media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:white}
   .no-print,.ctrl,.app-hdr,.action-bar,.pw-overlay{display:none!important}
   .sched-card{box-shadow:none;padding:0;margin:0 0 10px;border-radius:0}
@@ -176,6 +177,30 @@ th,td{border:1px solid var(--border)}
   body.print-emp .mgr-only{display:none!important}
   body.print-emp #emp-card{display:block!important}
   body:not(.print-emp) #emp-card{display:none!important}
+  /* צבעי תאים חזקים להדפסה */
+  .bg-m{background:#86efac!important}
+  .bg-a{background:#fcd34d!important}
+  .bg-n{background:#a5b4fc!important}
+  .bg-miss{background:#fca5a5!important}
+  .bg-12{background:#c4b5fd!important}
+  td[style*="ede9fe"]{background:#c4b5fd!important}
+  /* טקסט חזק */
+  .emp-name{color:#064e3b!important;font-size:12px!important;font-weight:900!important}
+  .emp-name-12{color:#4c1d95!important;font-size:12px!important;font-weight:900!important}
+  .emp-miss{color:#7f1d1d!important;font-size:11px!important;font-weight:800!important}
+  .sh-sub{color:#1e1b4b!important;font-size:10px!important;font-weight:700!important}
+  /* כותרות טבלה */
+  .th-day{background:#1d4ed8!important;color:white!important}
+  .th-day.pos2{background:#6d28d9!important;color:white!important}
+  .th-lbl,.td-lbl{background:#1e293b!important;color:white!important}
+  .td-lbl .sn{font-size:12px!important}
+  .td-lbl .sh{font-size:10px!important;opacity:1!important}
+  /* כרטיסי עמדה */
+  .pos1-bar{background:#1d4ed8!important}
+  .pos2-bar{background:#6d28d9!important}
+  .av-bar{background:#065f46!important}
+  .card-title-bar{color:white!important}
+  .card-title-bar h2,.card-title-bar .wk{color:white!important}
 }
 </style>
 </head>
