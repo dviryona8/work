@@ -61,7 +61,12 @@ body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f4f8;color:
 .btn-pdf{border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 .btn-pdf-m{background:var(--navy);color:white}
 .btn-pdf-e{background:var(--green);color:white}
+.btn-pdf-share{background:#25d366;color:white}
 .btn-pdf:hover{opacity:.88}
+/* Share loading overlay */
+.share-loading{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9000;color:white;font-size:16px;font-weight:700;gap:14px}
+.share-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .sched-card{background:white;border-radius:14px;padding:20px 22px;margin:0 20px 18px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
 .card-title-bar{color:white;padding:11px 18px;border-radius:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .card-title-bar h2{font-size:17px}
@@ -670,6 +675,7 @@ function renderOutput(){
     <div class="action-bar no-print">
       <button class="btn-pdf btn-pdf-e" onclick="printEmp()">📄 PDF לעובדים</button>
       <button class="btn-pdf btn-pdf-m" onclick="printMgr()">📋 PDF למנהל</button>
+      <button class="btn-pdf btn-pdf-share" onclick="shareImg('both')">📤 שתף תמונה</button>
     </div>
 
     <!-- עמדת נגבה -->
@@ -857,6 +863,83 @@ function deleteContact(idx){
 // ── Print ─────────────────────────────────────────────────────
 function printMgr(){document.body.classList.remove('print-emp');window.print();}
 function printEmp(){document.body.classList.add('print-emp');window.print();setTimeout(()=>document.body.classList.remove('print-emp'),500);}
+
+// ── Share as image ─────────────────────────────────────────────
+async function shareImg(mode){
+  if(!G.schedules){alert('טען קודם את הסידור');return;}
+  // בנה את הרשימה של קלפים להצלם
+  const ids=[];
+  if(G.activePos.has('נגבה'))ids.push('card-נגבה');
+  if(G.activePos.has('אשקלון'))ids.push('card-אשקלון');
+  if(!ids.length){alert('אין עמדות פעילות');return;}
+
+  // הצג ספינר
+  const loader=document.createElement('div');
+  loader.className='share-loading';
+  loader.innerHTML='<div class="share-spinner"></div><div>מכין תמונה...</div>';
+  document.body.appendChild(loader);
+
+  try{
+    // טען html2canvas דינמית אם לא קיים
+    if(!window.html2canvas){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        s.onload=res; s.onerror=rej;
+        document.head.appendChild(s);
+      });
+    }
+
+    // צלם כל קלף
+    const canvases=[];
+    for(const id of ids){
+      const el=document.getElementById(id);
+      if(!el)continue;
+      const c=await html2canvas(el,{
+        scale:2, useCORS:true, backgroundColor:'#ffffff',
+        ignoreElements:el2=>el2.classList.contains('no-print')
+      });
+      canvases.push(c);
+    }
+
+    // שלב לקנבס אחד
+    const gap=16;
+    const totalW=Math.max(...canvases.map(c=>c.width));
+    const totalH=canvases.reduce((h,c)=>h+c.height+gap,0)-gap;
+    const merged=document.createElement('canvas');
+    merged.width=totalW; merged.height=totalH;
+    const ctx=merged.getContext('2d');
+    ctx.fillStyle='#f0f4f8';
+    ctx.fillRect(0,0,totalW,totalH);
+    let y=0;
+    for(const c of canvases){ctx.drawImage(c,0,y);y+=c.height+gap;}
+
+    // שתף או הורד
+    merged.toBlob(async blob=>{
+      document.body.removeChild(loader);
+      const weekStr=G.iso?getStartStr(G.iso):'סידור';
+      const fname='סידור-עבודה-'+weekStr+'.png';
+      const file=new File([blob],fname,{type:'image/png'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        try{
+          await navigator.share({files:[file],title:'סידור עבודה '+weekStr});
+        }catch(e){if(e.name!=='AbortError')downloadBlob(blob,fname);}
+      }else{
+        downloadBlob(blob,fname);
+      }
+    },'image/png');
+  }catch(err){
+    document.body.removeChild(loader);
+    alert('שגיאה ביצירת התמונה: '+err.message);
+  }
+}
+function downloadBlob(blob,fname){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=fname;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
 
 // ── Init ──────────────────────────────────────────────────────
 (()=>{
