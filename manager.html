@@ -373,7 +373,7 @@ function splitCSV(line) {
 
 // ── Parsing ───────────────────────────────────────────────────
 const DAY_MAP  = {א:'ראשון',ב:'שני',ג:'שלישי',ד:'רביעי',ה:'חמישי',ו:'שישי',ש:'שבת'};
-const SHIFT_MAP= {מ:'בוקר',ב:'בוקר',צ:'צהריים',ל:'לילה'}; // מ=חדש, ב=נתונים ישנים
+const SHIFT_MAP= {ב:'בוקר',צ:'צהריים',ל:'לילה'};
 const DAYS     = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
 const SHIFTS   = ['בוקר','צהריים','לילה'];
 const HRS      = {בוקר:'06:00–14:00',צהריים:'14:00–22:00',לילה:'22:00–06:00'};
@@ -392,8 +392,8 @@ function parseMessages(txt) {
     const line=raw.trim(); if(!line||!line.includes(':'))continue;
     const ci=line.indexOf(':'); const name=line.slice(0,ci).trim(); const body=line.slice(ci+1);
     const avail={};
-    for(const[,dc,ss]of body.matchAll(/([אבגדהוש])\s*-\s*([מבצל,]+)/g)){
-      const day=DAY_MAP[dc]; if(day)avail[day]=[...ss.matchAll(/[מבצל]/g)].map(m=>SHIFT_MAP[m[0]]);
+    for(const[,,dc,ss]of body.matchAll(/(?:^|[ ,])([אבגדהוש])-([בצל,]+)/g)){
+      const day=DAY_MAP[dc]; if(day)avail[day]=[...ss.matchAll(/[בצל]/g)].map(m=>SHIFT_MAP[m[0]]);
     }
     if(name)res[name]=avail;
   }
