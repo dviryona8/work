@@ -502,14 +502,17 @@ function scheduleMulti(avail, prefs) {
       !reachedTarget(e) &&
       empAllowed(e,pos)
     );
-    const pref=cands.filter(e=>!below16h(assigned[e],dayIdx,shift));
-    const pool=pref.length?pref:cands;
-    // מיון: עדיפות לעובד עם פחות ימי זמינות עתידיים (יותר "דחוף" — פחות הזדמנויות נשארות)
-    // כך עובד שציין רק 2 ימים מקבל עדיפות על עובד שציין 7 ימים
+    // מיון בשלושה שלבים:
+    // 1. דחיפות: פחות ימים עתידיים = יותר דחוף = קודם (בוריס עם 0 ימים נותרים מנצח תמיד)
+    // 2. העדפה רכה: ללא אילוץ 16h עדיף — אבל רק כ-tiebreaker, לא חסימה!
+    // 3. ניקוד: איזון עומסים
+    const pool=cands.slice();
     pool.sort((a,b)=>{
       const af=futureDays(a,dayIdx), bf=futureDays(b,dayIdx);
-      if(af!==bf) return af-bf; // פחות עתידי = יותר דחוף
-      return score(a,shift)-score(b,shift); // שוויון — לפי ניקוד
+      if(af!==bf) return af-bf;
+      const as=below16h(assigned[a],dayIdx,shift)?1:0, bs=below16h(assigned[b],dayIdx,shift)?1:0;
+      if(as!==bs) return as-bs;
+      return score(a,shift)-score(b,shift);
     });
     if(pool.length){
       const emp=pool[0];
@@ -534,8 +537,11 @@ function scheduleMulti(avail, prefs) {
           !used.has(e) &&
           empAllowed(e,pos)               // ← הסרנו !reachedTarget
         );
-        const pref=cands.filter(e=>!below16h(assigned[e],dayIdx,shift));
-        const pool=(pref.length?pref:cands).sort((a,b)=>score(a,shift)-score(b,shift));
+        const pool=cands.slice().sort((a,b)=>{
+          const as=below16h(assigned[a],dayIdx,shift)?1:0, bs=below16h(assigned[b],dayIdx,shift)?1:0;
+          if(as!==bs) return as-bs;
+          return score(a,shift)-score(b,shift);
+        });
         if(pool.length){
           const emp=pool[0];
           schedules[pos][day][shift]=emp;
@@ -549,7 +555,6 @@ function scheduleMulti(avail, prefs) {
   }
 
   // ── פאס גיבוי ב': slots שעדיין ריקים — מתעלמים מזמינות מפורשת ──
-  // אם אף עובד לא ציין זמינות לאותה משמרת, נשבץ את מי שלא עבד היום ולא מפר 8ש'
   for(const[dayIdx,day]of DAYS.entries()){
     for(const shift of SHIFTS){
       for(const pos of POSITIONS){
@@ -558,10 +563,13 @@ function scheduleMulti(avail, prefs) {
         const cands=ALL_EMPS.filter(e=>
           !violates8h(assigned[e],dayIdx,shift) &&
           !used.has(e) &&
-          empAllowed(e,pos)               // ← ללא בדיקת זמינות וללא בדיקת יעד
+          empAllowed(e,pos)
         );
-        const pref=cands.filter(e=>!below16h(assigned[e],dayIdx,shift));
-        const pool=(pref.length?pref:cands).sort((a,b)=>score(a,shift)-score(b,shift));
+        const pool=cands.slice().sort((a,b)=>{
+          const as=below16h(assigned[a],dayIdx,shift)?1:0, bs=below16h(assigned[b],dayIdx,shift)?1:0;
+          if(as!==bs) return as-bs;
+          return score(a,shift)-score(b,shift);
+        });
         if(pool.length){
           const emp=pool[0];
           schedules[pos][day][shift]=emp;
