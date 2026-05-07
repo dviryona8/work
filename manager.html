@@ -520,6 +520,60 @@ function scheduleMulti(avail, prefs) {
       usedPerDay[day].add(emp);
     }
   }
+
+  // ── פאס גיבוי א': slots ריקים — מתעלמים מיעד, מכבדים זמינות ──
+  // עובד שהגיע ליעד (כגון נגאוקר 4/4) ישובץ לפי הצורך אם ציין זמינות
+  for(const[dayIdx,day]of DAYS.entries()){
+    for(const shift of SHIFTS){
+      for(const pos of POSITIONS){
+        if(!G.activePos.has(pos)||schedules[pos][day][shift]) continue;
+        const used=usedPerDay[day];
+        const cands=ALL_EMPS.filter(e=>
+          (avail[e][day]||[]).includes(shift) &&
+          !violates8h(assigned[e],dayIdx,shift) &&
+          !used.has(e) &&
+          empAllowed(e,pos)               // ← הסרנו !reachedTarget
+        );
+        const pref=cands.filter(e=>!below16h(assigned[e],dayIdx,shift));
+        const pool=(pref.length?pref:cands).sort((a,b)=>score(a,shift)-score(b,shift));
+        if(pool.length){
+          const emp=pool[0];
+          schedules[pos][day][shift]=emp;
+          hours[emp]=(hours[emp]||0)+8;
+          if(shift==='לילה') nightH[emp]=(nightH[emp]||0)+8;
+          assigned[emp].push([dayIdx,shift]);
+          usedPerDay[day].add(emp);
+        }
+      }
+    }
+  }
+
+  // ── פאס גיבוי ב': slots שעדיין ריקים — מתעלמים מזמינות מפורשת ──
+  // אם אף עובד לא ציין זמינות לאותה משמרת, נשבץ את מי שלא עבד היום ולא מפר 8ש'
+  for(const[dayIdx,day]of DAYS.entries()){
+    for(const shift of SHIFTS){
+      for(const pos of POSITIONS){
+        if(!G.activePos.has(pos)||schedules[pos][day][shift]) continue;
+        const used=usedPerDay[day];
+        const cands=ALL_EMPS.filter(e=>
+          !violates8h(assigned[e],dayIdx,shift) &&
+          !used.has(e) &&
+          empAllowed(e,pos)               // ← ללא בדיקת זמינות וללא בדיקת יעד
+        );
+        const pref=cands.filter(e=>!below16h(assigned[e],dayIdx,shift));
+        const pool=(pref.length?pref:cands).sort((a,b)=>score(a,shift)-score(b,shift));
+        if(pool.length){
+          const emp=pool[0];
+          schedules[pos][day][shift]=emp;
+          hours[emp]=(hours[emp]||0)+8;
+          if(shift==='לילה') nightH[emp]=(nightH[emp]||0)+8;
+          assigned[emp].push([dayIdx,shift]);
+          usedPerDay[day].add(emp);
+        }
+      }
+    }
+  }
+
   return{schedules,hours,nightH};
 }
 
