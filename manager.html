@@ -464,26 +464,31 @@ function scheduleMulti(avail, prefs) {
     return choice === 'both' || choice === pos;
   }
 
-  // שיבוץ לפי יום — ממלאים כל יום במלואו לפני שעוברים ליום הבא
-  // כך צהריים מתחרה על עובדים לפני שהם נחסמים ע"י לילות של ימים אחרים
+  // MCF (Most Constrained First) — לכל יום, ממיינים משמרות לפי מספר עובדים זמינים.
+  // משמרת שיש לה פחות מועמדים מקבלת עדיפות — כך עובד שנרשם רק ללילה לא יגנב לבוקר.
   for(const[dayIdx,day]of DAYS.entries()){
-    for(const shift of['בוקר','צהריים','לילה']){
+    const candCnt = sh => Object.keys(avail).filter(e=>
+      (avail[e][day]||[]).includes(sh) &&
+      !violates8h(assigned[e],dayIdx,sh) &&
+      !reachedTarget(e)
+    ).length;
+    const shiftOrder=[...SHIFTS].sort((a,b)=>candCnt(a)-candCnt(b));
+
+    for(const shift of shiftOrder){
       for(const pos of POSITIONS){
         if(!G.activePos.has(pos)) continue;
         const takenSlot = new Set(POSITIONS.map(p=>schedules[p][day][shift]).filter(Boolean));
-        // עובדים שכבר עובדים היום (בכל משמרת שהיא) — מקסימום משמרת אחת ליום
         const workedToday = new Set(
           POSITIONS.flatMap(p=>Object.values(schedules[p][day]).filter(Boolean))
         );
         const base = Object.keys(avail).filter(e=>
           (avail[e][day]||[]).includes(shift) &&
-          !violates8h(assigned[e],dayIdx,shift) && // חסימה קשה: < 8 שעות
+          !violates8h(assigned[e],dayIdx,shift) &&
           !takenSlot.has(e) &&
-          !workedToday.has(e) &&  // מקסימום משמרת אחת ליום
-          !reachedTarget(e) &&    // לא עבר יעד משמרות
+          !workedToday.has(e) &&
+          !reachedTarget(e) &&
           empAllowed(e, pos)
         );
-        // עדיפות לעובדים עם 16+ שעות מנוחה; fallback לעובדים עם 8-16 שעות
         const preferred = base.filter(e=>!below16h(assigned[e],dayIdx,shift));
         const cands = (preferred.length ? preferred : base)
           .sort((a,b2)=>score(a,shift)-score(b2,shift));
