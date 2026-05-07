@@ -436,7 +436,7 @@ function below16h(assigned,dayIdx,shift){
 
 // ── Multi-position scheduler ──────────────────────────────────
 function scheduleMulti(avail, prefs) {
-  // אתחול טבלאות שיבוץ לכל עמדה (גם לא-פעילות — ריקות)
+  // אתחול
   const schedules = {};
   POSITIONS.forEach(pos => {
     schedules[pos] = Object.fromEntries(DAYS.map(d=>[d,Object.fromEntries(SHIFTS.map(s=>[s,null]))]));
@@ -444,90 +444,80 @@ function scheduleMulti(avail, prefs) {
   const hours    = Object.fromEntries(Object.keys(avail).map(e=>[e,0]));
   const nightH   = Object.fromEntries(Object.keys(avail).map(e=>[e,0]));
   const nightCap = Object.fromEntries(Object.keys(avail).map(e=>[e,Math.max(DAYS.filter(d=>(avail[e][d]||[]).includes('לילה')).length,1)]));
-  // assigned: כל המשמרות שעובד שובץ אליהן — בכל העמדות
   const assigned = Object.fromEntries(Object.keys(avail).map(e=>[e,[]]));
+  const ALL_EMPS = Object.keys(avail);
+
+  // כמה ימים שונים מסר כל עובד זמינות (מקסימום משמרות אפשרי לו)
+  const availDayCnt = {};
+  for(const e of ALL_EMPS)
+    availDayCnt[e] = DAYS.filter(d=>(avail[e][d]||[]).length>0).length;
 
   function score(emp,shift){
     const b=(prefs[emp]||{})[shift]||1; const nb=(prefs[emp]||{})['לילה']||1;
     const target=G.empTarget[emp];
     const curS=(hours[emp]||0)/8;
-    // אם יש יעד — נורמל לפי יעד; אחרת לפי שעות גולמיות
-    const util=target ? curS/target : hours[emp]/14;
+    // נורמל לפי יעד אם יש, אחרת לפי מספר הימים שהעובד ציין (לא קבוע 14)
+    const cap=target||Math.max(availDayCnt[emp],1);
+    const util=curS/cap;
     return shift==='לילה'?(nightH[emp]/nightCap[emp])/b:util/b*Math.pow(nb,.4);
   }
   function reachedTarget(emp){
-    const t=G.empTarget[emp]; return t && (hours[emp]||0)/8 >= t;
+    const t=G.empTarget[emp]; return t && (hours[emp]||0)/8>=t;
   }
-  // בדיקה אם עובד מורשה לעמדה מסוימת
-  function empAllowed(emp, pos){
-    const choice = G.empPos[emp] || 'both';
-    return choice === 'both' || choice === pos;
+  function empAllowed(emp,pos){
+    const c=G.empPos[emp]||'both'; return c==='both'||c===pos;
+  }
+  // כמה ימי זמינות עתידיים יש לעובד אחרי dayIdx
+  function futureDays(emp,afterDayIdx){
+    let c=0;
+    for(let d=afterDayIdx+1;d<DAYS.length;d++)
+      if((avail[emp][DAYS[d]]||[]).length>0) c++;
+    return c;
   }
 
-  // Backtracking scheduler — לכל יום מוצאים את השיבוץ עם מקסימום slots מלאים.
-  // גרידי MCF לא הספיק: אם A זמין לבוקר+לילה ו-B רק לבוקר, גרידי לוקח A לבוקר ומשאיר לילה ריק.
-  // הbacktracking מנסה את כל הקומבינציות ומוצא את הפתרון המקסימלי.
-  for(const[dayIdx,day]of DAYS.entries()){
-    // בנה רשימת slots: [{shift,pos}] — כל קומבינציה של משמרת × עמדה פעילה
-    const slots=[];
+  // MCF גלובלי: בונה את כל ה-slots ומיין לפי מספר מועמדים (עולה).
+  // כך slots קשים לכיסוי (כגון לילה בסוף השבוע) מטופלים לפני slots קלים.
+  // זה גם פותר את בעיית עובד שציין מעט ימים — הוא ישובץ לפני שhעובדים הגמישים ייתפסו.
+  const allSlots=[];
+  for(const[dayIdx,day]of DAYS.entries())
     for(const shift of SHIFTS)
       for(const pos of POSITIONS)
-        if(G.activePos.has(pos)) slots.push({shift,pos});
-    const N=slots.length;
+        if(G.activePos.has(pos)) allSlots.push({dayIdx,day,shift,pos});
 
-    // לכל slot — רשימת מועמדים ממוינת: קודם ללא אילוץ 16h רך, אח"כ לפי ניקוד
-    const eligible=slots.map(({shift,pos})=>{
-      const all=Object.keys(avail).filter(e=>
-        (avail[e][day]||[]).includes(shift) &&
-        !violates8h(assigned[e],dayIdx,shift) &&
-        !reachedTarget(e) &&
-        empAllowed(e,pos)
-      );
-      const sortFn=(a,b2)=>score(a,shift)-score(b2,shift);
-      const pref=all.filter(e=>!below16h(assigned[e],dayIdx,shift)).sort(sortFn);
-      const soft=all.filter(e=> below16h(assigned[e],dayIdx,shift)).sort(sortFn);
-      return[...pref,...soft];
+  // מניין מועמדים בסיסי (ללא usedToday — לצורך מיון בלבד)
+  const cntBase=({day,shift,pos})=>
+    ALL_EMPS.filter(e=>(avail[e][day]||[]).includes(shift)&&!reachedTarget(e)&&empAllowed(e,pos)).length;
+  allSlots.sort((a,b)=>cntBase(a)-cntBase(b));
+
+  // usedPerDay: עובדים שכבר שובצו לכל יום — מניעת 2 משמרות
+  const usedPerDay=Object.fromEntries(DAYS.map(d=>[d,new Set()]));
+
+  for(const{dayIdx,day,shift,pos}of allSlots){
+    if(schedules[pos][day][shift]) continue; // כבר שובץ
+    const used=usedPerDay[day];
+    const cands=ALL_EMPS.filter(e=>
+      (avail[e][day]||[]).includes(shift) &&
+      !violates8h(assigned[e],dayIdx,shift) &&
+      !used.has(e) &&
+      !reachedTarget(e) &&
+      empAllowed(e,pos)
+    );
+    const pref=cands.filter(e=>!below16h(assigned[e],dayIdx,shift));
+    const pool=pref.length?pref:cands;
+    // מיון: עדיפות לעובד עם פחות ימי זמינות עתידיים (יותר "דחוף" — פחות הזדמנויות נשארות)
+    // כך עובד שציין רק 2 ימים מקבל עדיפות על עובד שציין 7 ימים
+    pool.sort((a,b)=>{
+      const af=futureDays(a,dayIdx), bf=futureDays(b,dayIdx);
+      if(af!==bf) return af-bf; // פחות עתידי = יותר דחוף
+      return score(a,shift)-score(b,shift); // שוויון — לפי ניקוד
     });
-
-    // Backtracking: מוצא שיבוץ עם מקסימום slots מלאים (מובטח אופטימלי)
-    let bestFilled=-1;
-    const bestAsgn=new Array(N).fill(null);
-    const curAsgn =new Array(N).fill(null);
-
-    function bt(si,used,filled){
-      // גיזום: גם אם נמלא כל הנותרים, לא נעקוף את הטוב ביותר
-      if(filled+(N-si)<=bestFilled) return;
-      if(si===N){
-        if(filled>bestFilled){
-          bestFilled=filled;
-          for(let i=0;i<N;i++) bestAsgn[i]=curAsgn[i];
-        }
-        return;
-      }
-      for(const emp of eligible[si]){
-        if(used.has(emp)) continue;
-        used.add(emp); curAsgn[si]=emp;
-        bt(si+1,used,filled+1);
-        used.delete(emp); curAsgn[si]=null;
-        if(bestFilled===N) return; // כיסוי מושלם — עצור מיד
-      }
-      bt(si+1,used,filled); // השאר slot ריק
-    }
-
-    bt(0,new Set(),0);
-
-    // החל את השיבוץ הטוב ביותר
-    const seenKey=new Set();
-    for(let i=0;i<N;i++){
-      const{shift,pos}=slots[i];
-      const emp=bestAsgn[i];
-      if(emp){
-        schedules[pos][day][shift]=emp;
-        hours[emp]=(hours[emp]||0)+8;
-        if(shift==='לילה') nightH[emp]=(nightH[emp]||0)+8;
-        const k=emp+'|'+dayIdx+'|'+shift;
-        if(!seenKey.has(k)){seenKey.add(k);assigned[emp].push([dayIdx,shift]);}
-      }
+    if(pool.length){
+      const emp=pool[0];
+      schedules[pos][day][shift]=emp;
+      hours[emp]=(hours[emp]||0)+8;
+      if(shift==='לילה') nightH[emp]=(nightH[emp]||0)+8;
+      assigned[emp].push([dayIdx,shift]);
+      usedPerDay[day].add(emp);
     }
   }
   return{schedules,hours,nightH};
