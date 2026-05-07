@@ -429,15 +429,29 @@ function parsePrefs(txt) {
 
 // ── Gap rules (גלובלי — חוצה עמדות) ─────────────────────────
 function shiftStartHr(dayIdx,shift){return dayIdx*24+SHIFT_HR[shift];}
-// חסימה קשה: פחות מ-8 שעות — אסור לחלוטין
-function violates8h(assigned,dayIdx,shift){
-  const newH=shiftStartHr(dayIdx,shift);
-  return assigned.some(([d,s])=>Math.abs(shiftStartHr(d,s)-newH)<8);
+
+// חישוב מנוחה נכון: סיום משמרת קודמת → התחלת החדשה (כל משמרת = 8ש')
+// לילה מסתיים ב-06:00, בוקר מתחיל ב-06:00 = 0ש' מנוחה → חסום!
+function restBetween(assigned,dayIdx,shift){
+  const ns=shiftStartHr(dayIdx,shift), ne=ns+8;
+  let minRest=Infinity;
+  for(const[d,s]of assigned){
+    const ps=shiftStartHr(d,s), pe=ps+8;
+    const r=ns>=pe ? ns-pe : ps>=ne ? ps-ne : -1; // מנוחה בין סיום לתחילה
+    if(r<minRest) minRest=r;
+  }
+  return minRest;
 }
-// העדפה רכה: פחות מ-16 שעות (כולל) — עדיף להימנע אבל מותר
+// חסימה קשה: פחות מ-8 שעות מנוחה בין סיום לתחילה
+function violates8h(assigned,dayIdx,shift){
+  if(!assigned.length) return false;
+  return restBetween(assigned,dayIdx,shift)<8;
+}
+// העדפה רכה: 8–16 שעות מנוחה
 function below16h(assigned,dayIdx,shift){
-  const newH=shiftStartHr(dayIdx,shift);
-  return assigned.some(([d,s])=>{const g=Math.abs(shiftStartHr(d,s)-newH);return g>=8&&g<=16;});
+  if(!assigned.length) return false;
+  const r=restBetween(assigned,dayIdx,shift);
+  return r>=0&&r<16;
 }
 
 // ── Multi-position scheduler ──────────────────────────────────
