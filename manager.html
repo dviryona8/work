@@ -24,6 +24,13 @@
 .pos-tog.p1{border-color:#93c5fd;background:#dbeafe;color:#1d4ed8}
 .pos-tog.p2{border-color:#c4b5fd;background:#ede9fe;color:#7c3aed}
 .pos-tog.off{background:#f1f5f9!important;color:var(--gray)!important;border-color:var(--border)!important;text-decoration:line-through;opacity:.6}
+/* Employee target shifts */
+.emp-target-row{display:flex;align-items:center;gap:5px;margin-top:5px}
+.emp-target-lbl{font-size:10px;color:var(--gray);white-space:nowrap}
+.emp-target-inp{width:42px;padding:3px 5px;border:1.5px solid var(--border);border-radius:5px;font-size:12px;font-weight:700;text-align:center;font-family:inherit;color:var(--slate)}
+.emp-target-inp:focus{outline:none;border-color:var(--blue)}
+.emp-progress{font-size:10px;font-weight:700;margin-right:2px}
+.emp-progress.over{color:var(--red)}.emp-progress.done{color:var(--green)}.emp-progress.going{color:var(--blue)}
 /* Employee position selector */
 .epos-sel{display:flex;gap:3px;margin-top:5px}
 .epos-btn{padding:3px 7px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid var(--border);background:white;color:var(--gray);transition:.12s}
@@ -333,7 +340,8 @@ let G = {
   sched12h: {נגבה:{}, אשקלון:{}},   // per position per day
   editCtx: null,
   activePos: new Set(['נגבה', 'אשקלון']), // עמדות פעילות השבוע
-  empPos: {}  // {empName: 'both'|'נגבה'|'אשקלון'}
+  empPos: {},     // {empName: 'both'|'נגבה'|'אשקלון'}
+  empTarget: {}   // {empName: N} — יעד משמרות לעובד
 };
 
 // ── URL helpers ───────────────────────────────────────────────
@@ -441,7 +449,14 @@ function scheduleMulti(avail, prefs) {
 
   function score(emp,shift){
     const b=(prefs[emp]||{})[shift]||1; const nb=(prefs[emp]||{})['לילה']||1;
-    return shift==='לילה'?(nightH[emp]/nightCap[emp])/b:(hours[emp]/b)*Math.pow(nb,.4);
+    const target=G.empTarget[emp];
+    const curS=(hours[emp]||0)/8;
+    // אם יש יעד — נורמל לפי יעד; אחרת לפי שעות גולמיות
+    const util=target ? curS/target : hours[emp]/14;
+    return shift==='לילה'?(nightH[emp]/nightCap[emp])/b:util/b*Math.pow(nb,.4);
+  }
+  function reachedTarget(emp){
+    const t=G.empTarget[emp]; return t && (hours[emp]||0)/8 >= t;
   }
   // בדיקה אם עובד מורשה לעמדה מסוימת
   function empAllowed(emp, pos){
@@ -465,6 +480,7 @@ function scheduleMulti(avail, prefs) {
           !violates8h(assigned[e],dayIdx,shift) && // חסימה קשה: < 8 שעות
           !takenSlot.has(e) &&
           !workedToday.has(e) &&  // מקסימום משמרת אחת ליום
+          !reachedTarget(e) &&    // לא עבר יעד משמרות
           empAllowed(e, pos)
         );
         // עדיפות לעובדים עם 16+ שעות מנוחה; fallback לעובדים עם 8-16 שעות
@@ -507,6 +523,21 @@ function togglePos(pos){
 // ── Set employee position assignment ─────────────────────────
 function setEmpPos(emp, choice){
   G.empPos[emp]=choice;
+  if(G.avail){reScheduleAndRender();}
+}
+
+// ── Set employee shift target ─────────────────────────────────
+function setEmpTarget(emp, val){
+  const n=parseInt(val);
+  const saved=JSON.parse(localStorage.getItem('empTargets_'+TEAM_ID)||'{}');
+  if(n>0){
+    G.empTarget[emp]=n;
+    saved[emp]=n;
+  }else{
+    delete G.empTarget[emp];
+    delete saved[emp];
+  }
+  localStorage.setItem('empTargets_'+TEAM_ID,JSON.stringify(saved));
   if(G.avail){reScheduleAndRender();}
 }
 
@@ -574,7 +605,8 @@ async function clearData(){
     document.getElementById('output').innerHTML='';
     G={schedules:null,avail:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,subs:[],
        dayMode:{נגבה:{},אשקלון:{}},sched12h:{נגבה:{},אשקלון:{}},editCtx:null,
-       activePos:new Set(['נגבה','אשקלון']),empPos:{}};
+       activePos:new Set(['נגבה','אשקלון']),empPos:{},
+       empTarget:JSON.parse(localStorage.getItem('empTargets_'+TEAM_ID)||'{}')};
     // איפוס כפתורי עמדות
     POSITIONS.forEach(p=>{const btn=document.getElementById('tog-'+p);if(btn){const cls=p==='נגבה'?'p1':'p2';btn.className='pos-tog '+cls;btn.textContent=(p==='נגבה'?'🔵':'🟣')+' '+p+' — פעילה';}});
   }catch(e){setStatus(`<span style="color:var(--red)">שגיאה: ${e.message}</span>`);}
@@ -587,6 +619,8 @@ function renderSchedule(iso,messagesText,extraNotes,subs){
   const avail=parseMessages(messagesText);
   const prefs=parsePrefs(document.getElementById('prefs-txt').value);
   G.empPos={}; // איפוס שיוך עמדות לעובדים בכל טעינה חדשה
+  // טען יעדי משמרות שמורים מ-localStorage
+  G.empTarget=JSON.parse(localStorage.getItem('empTargets_'+TEAM_ID)||'{}');
   const{schedules,hours,nightH}=scheduleMulti(avail,prefs);
   G={...G,schedules,avail,hours,nightH,iso,notes:extraNotes,prefs,dates,subs:subs||[]};
   renderOutput();
@@ -655,19 +689,31 @@ function renderOutput(){
       return`<td class="td-av">${dots}</td>`;
     }).join('');
     const totalAssigned=POSITIONS.reduce((sum,pos)=>sum+DAYS.reduce((s2,d)=>s2+SHIFTS.filter(sh=>schedules[pos][d][sh]===emp).length,0),0);
+    const empEsc=emp.replace(/'/g,"\\'");
+    // תצוגת התקדמות לעומת יעד
+    const tgt=G.empTarget[emp];
+    const progCls=tgt?(totalAssigned>tgt?'over':totalAssigned===tgt?'done':'going'):'going';
+    const progTxt=tgt?`<span class="emp-progress ${progCls}">${totalAssigned}/${tgt}</span>`:`<span class="emp-progress going">${totalAssigned}</span>`;
     // כפתורי שיוך עמדה לעובד
     const epChoice=G.empPos[emp]||'both';
-    const empEsc=emp.replace(/'/g,"\\'");
     const posSelHTML=`<div class="epos-sel no-print">
       <button class="epos-btn${epChoice==='נגבה'?' act-1':''}" onclick="setEmpPos('${empEsc}','נגבה')" title="רק נגבה">נגבה</button>
       <button class="epos-btn${epChoice==='both'?' act-both':''}" onclick="setEmpPos('${empEsc}','both')" title="שתי עמדות">שניהם</button>
       <button class="epos-btn${epChoice==='אשקלון'?' act-2':''}" onclick="setEmpPos('${empEsc}','אשקלון')" title="רק אשקלון">אשקלון</button>
     </div>`;
+    const targetHTML=`<div class="emp-target-row no-print">
+      <span class="emp-target-lbl">יעד:</span>
+      <input class="emp-target-inp" type="number" min="1" max="21"
+        value="${tgt||''}" placeholder="—"
+        onchange="setEmpTarget('${empEsc}',this.value)"
+        onclick="event.stopPropagation()">
+      <span class="emp-target-lbl">משמרות</span>
+    </div>`;
     return`<tr>
       <td class="td-emp">
         <div class="emp-nm">${emp}${isExc?' <span class="exc-badge">⚠️ חריג</span>':''}</div>
-        <div class="emp-st">${totalAssigned*8}ש׳ | ${(nightH[emp]||0)/8} לילות 🌙</div>
-        ${posSelHTML}
+        <div class="emp-st">${progTxt} משמרות | ${(nightH[emp]||0)/8} 🌙</div>
+        ${targetHTML}${posSelHTML}
       </td>${cells}</tr>`;
   }).join('');
 
