@@ -420,10 +420,10 @@ function violates8h(assigned,dayIdx,shift){
   const newH=shiftStartHr(dayIdx,shift);
   return assigned.some(([d,s])=>Math.abs(shiftStartHr(d,s)-newH)<8);
 }
-// העדפה רכה: פחות מ-16 שעות — עדיף להימנע אבל מותר
+// העדפה רכה: פחות מ-16 שעות (כולל) — עדיף להימנע אבל מותר
 function below16h(assigned,dayIdx,shift){
   const newH=shiftStartHr(dayIdx,shift);
-  return assigned.some(([d,s])=>{const g=Math.abs(shiftStartHr(d,s)-newH);return g>=8&&g<16;});
+  return assigned.some(([d,s])=>{const g=Math.abs(shiftStartHr(d,s)-newH);return g>=8&&g<=16;});
 }
 
 // ── Multi-position scheduler ──────────────────────────────────
@@ -456,10 +456,15 @@ function scheduleMulti(avail, prefs) {
       for(const pos of POSITIONS){
         if(!G.activePos.has(pos)) continue;
         const takenSlot = new Set(POSITIONS.map(p=>schedules[p][day][shift]).filter(Boolean));
+        // עובדים שכבר עובדים היום (בכל משמרת שהיא) — מקסימום משמרת אחת ליום
+        const workedToday = new Set(
+          POSITIONS.flatMap(p=>Object.values(schedules[p][day]).filter(Boolean))
+        );
         const base = Object.keys(avail).filter(e=>
           (avail[e][day]||[]).includes(shift) &&
           !violates8h(assigned[e],dayIdx,shift) && // חסימה קשה: < 8 שעות
           !takenSlot.has(e) &&
+          !workedToday.has(e) &&  // מקסימום משמרת אחת ליום
           empAllowed(e, pos)
         );
         // עדיפות לעובדים עם 16+ שעות מנוחה; fallback לעובדים עם 8-16 שעות
