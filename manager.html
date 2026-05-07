@@ -429,29 +429,21 @@ function parsePrefs(txt) {
 
 // ── Gap rules (גלובלי — חוצה עמדות) ─────────────────────────
 function shiftStartHr(dayIdx,shift){return dayIdx*24+SHIFT_HR[shift];}
-
-// חישוב מנוחה נכון: סיום משמרת קודמת → התחלת החדשה (כל משמרת = 8ש')
-// לילה מסתיים ב-06:00, בוקר מתחיל ב-06:00 = 0ש' מנוחה → חסום!
-function restBetween(assigned,dayIdx,shift){
-  const ns=shiftStartHr(dayIdx,shift), ne=ns+8;
-  let minRest=Infinity;
-  for(const[d,s]of assigned){
-    const ps=shiftStartHr(d,s), pe=ps+8;
-    const r=ns>=pe ? ns-pe : ps>=ne ? ps-ne : -1; // מנוחה בין סיום לתחילה
-    if(r<minRest) minRest=r;
-  }
-  return minRest;
-}
-// חסימה קשה: פחות מ-8 שעות מנוחה בין סיום לתחילה
+// חסימה קשה: פחות מ-8ש' בין שעות התחלה, OR לילה יום N → בוקר יום N+1 (0ש' מנוחה בפועל)
 function violates8h(assigned,dayIdx,shift){
-  if(!assigned.length) return false;
-  return restBetween(assigned,dayIdx,shift)<8;
+  const newH=shiftStartHr(dayIdx,shift);
+  return assigned.some(([d,s])=>{
+    if(Math.abs(shiftStartHr(d,s)-newH)<8) return true;
+    // לילה מסתיים 06:00, בוקר מתחיל 06:00 = 0ש' מנוחה → חסום!
+    if(s==='לילה'&&shift==='בוקר'&&d===dayIdx-1) return true;
+    if(shift==='לילה'&&s==='בוקר'&&dayIdx===d-1) return true;
+    return false;
+  });
 }
-// העדפה רכה: 8–16 שעות מנוחה
+// העדפה רכה: 8–16ש' בין התחלות
 function below16h(assigned,dayIdx,shift){
-  if(!assigned.length) return false;
-  const r=restBetween(assigned,dayIdx,shift);
-  return r>=0&&r<16;
+  const newH=shiftStartHr(dayIdx,shift);
+  return assigned.some(([d,s])=>{const g=Math.abs(shiftStartHr(d,s)-newH);return g>=8&&g<=16;});
 }
 
 // ── Multi-position scheduler ──────────────────────────────────
@@ -556,34 +548,6 @@ function scheduleMulti(avail, prefs) {
           !violates8h(assigned[e],dayIdx,shift) &&
           !used.has(e) &&
           empAllowed(e,pos)               // ← הסרנו !reachedTarget
-        );
-        const pool=cands.slice().sort((a,b)=>{
-          const as=below16h(assigned[a],dayIdx,shift)?1:0, bs=below16h(assigned[b],dayIdx,shift)?1:0;
-          if(as!==bs) return as-bs;
-          return score(a,shift)-score(b,shift);
-        });
-        if(pool.length){
-          const emp=pool[0];
-          schedules[pos][day][shift]=emp;
-          hours[emp]=(hours[emp]||0)+8;
-          if(shift==='לילה') nightH[emp]=(nightH[emp]||0)+8;
-          assigned[emp].push([dayIdx,shift]);
-          usedPerDay[day].add(emp);
-        }
-      }
-    }
-  }
-
-  // ── פאס גיבוי ב': slots שעדיין ריקים — מתעלמים מזמינות מפורשת ──
-  for(const[dayIdx,day]of DAYS.entries()){
-    for(const shift of SHIFTS){
-      for(const pos of POSITIONS){
-        if(!G.activePos.has(pos)||schedules[pos][day][shift]) continue;
-        const used=usedPerDay[day];
-        const cands=ALL_EMPS.filter(e=>
-          !violates8h(assigned[e],dayIdx,shift) &&
-          !used.has(e) &&
-          empAllowed(e,pos)
         );
         const pool=cands.slice().sort((a,b)=>{
           const as=below16h(assigned[a],dayIdx,shift)?1:0, bs=below16h(assigned[b],dayIdx,shift)?1:0;
