@@ -413,11 +413,17 @@ function parsePrefs(txt) {
   return res;
 }
 
-// ── 24h gap (גלובלי — חוצה עמדות) ────────────────────────────
+// ── Gap rules (גלובלי — חוצה עמדות) ─────────────────────────
 function shiftStartHr(dayIdx,shift){return dayIdx*24+SHIFT_HR[shift];}
-function violates24h(assigned,dayIdx,shift){
+// חסימה קשה: פחות מ-8 שעות — אסור לחלוטין
+function violates8h(assigned,dayIdx,shift){
   const newH=shiftStartHr(dayIdx,shift);
-  return assigned.some(([d,s])=>Math.abs(shiftStartHr(d,s)-newH)<24);
+  return assigned.some(([d,s])=>Math.abs(shiftStartHr(d,s)-newH)<8);
+}
+// העדפה רכה: פחות מ-16 שעות — עדיף להימנע אבל מותר
+function below16h(assigned,dayIdx,shift){
+  const newH=shiftStartHr(dayIdx,shift);
+  return assigned.some(([d,s])=>{const g=Math.abs(shiftStartHr(d,s)-newH);return g>=8&&g<16;});
 }
 
 // ── Multi-position scheduler ──────────────────────────────────
@@ -450,13 +456,15 @@ function scheduleMulti(avail, prefs) {
       for(const pos of POSITIONS){
         if(!G.activePos.has(pos)) continue;
         const takenSlot = new Set(POSITIONS.map(p=>schedules[p][day][shift]).filter(Boolean));
-        const cands = Object.keys(avail)
-          .filter(e=>
-            (avail[e][day]||[]).includes(shift) &&
-            !violates24h(assigned[e],dayIdx,shift) &&
-            !takenSlot.has(e) &&
-            empAllowed(e, pos)
-          )
+        const base = Object.keys(avail).filter(e=>
+          (avail[e][day]||[]).includes(shift) &&
+          !violates8h(assigned[e],dayIdx,shift) && // חסימה קשה: < 8 שעות
+          !takenSlot.has(e) &&
+          empAllowed(e, pos)
+        );
+        // עדיפות לעובדים עם 16+ שעות מנוחה; fallback לעובדים עם 8-16 שעות
+        const preferred = base.filter(e=>!below16h(assigned[e],dayIdx,shift));
+        const cands = (preferred.length ? preferred : base)
           .sort((a,b2)=>score(a,shift)-score(b2,shift));
         if(cands.length){
           const ch=cands[0];
