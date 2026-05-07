@@ -31,6 +31,11 @@
 .emp-target-inp:focus{outline:none;border-color:var(--blue)}
 .emp-progress{font-size:10px;font-weight:700;margin-right:2px}
 .emp-progress.over{color:var(--red)}.emp-progress.done{color:var(--green)}.emp-progress.going{color:var(--blue)}
+/* Exclude / restore employee */
+.btn-exclude{padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #fecaca;background:white;color:var(--red);line-height:1;transition:.12s}
+.btn-exclude:hover{background:#fef2f2}
+.btn-restore{padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #bbf7d0;background:#f0fdf4;color:var(--green);transition:.12s}
+.btn-restore:hover{background:#dcfce7}
 /* Employee position selector */
 .epos-sel{display:flex;gap:3px;margin-top:5px}
 .epos-btn{padding:3px 7px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid var(--border);background:white;color:var(--gray);transition:.12s}
@@ -333,15 +338,16 @@ const TEAM_ID = new URLSearchParams(location.search).get('team') || 'default';
 let curPw = localStorage.getItem('mgr_pw_' + TEAM_ID) || DEF_PW;
 
 let G = {
-  schedules: null,  // {pos: {day: {shift: emp|null}}}
+  schedules: null,
   avail: null, hours: null, nightH: null, iso: null,
   notes: [], prefs: {}, dates: null, subs: [],
-  dayMode:  {נגבה:{}, אשקלון:{}},   // per position per day
-  sched12h: {נגבה:{}, אשקלון:{}},   // per position per day
+  dayMode:  {נגבה:{}, אשקלון:{}},
+  sched12h: {נגבה:{}, אשקלון:{}},
   editCtx: null,
-  activePos: new Set(['נגבה', 'אשקלון']), // עמדות פעילות השבוע
-  empPos: {},     // {empName: 'both'|'נגבה'|'אשקלון'}
-  empTarget: {}   // {empName: N} — יעד משמרות לעובד
+  activePos: new Set(['נגבה', 'אשקלון']),
+  empPos: {},
+  empTarget: {},
+  excluded: new Set()  // עובדים שהוסרו זמנית מהסידור השבוע
 };
 
 // ── URL helpers ───────────────────────────────────────────────
@@ -626,6 +632,22 @@ function setEmpTarget(emp, val){
   if(G.avail){reScheduleAndRender();}
 }
 
+// ── הסרה / שחזור עובד מהסידור השבועי ────────────────────────
+function excludeEmp(emp){
+  if(!confirm(`להסיר את ${emp} מסידור השבוע?\n(ניתן לשחזר בכל עת)`)) return;
+  G.excluded.add(emp);
+  localStorage.setItem('excluded_'+TEAM_ID, JSON.stringify([...G.excluded]));
+  // סנן מהזמינות הפעילה ועשה שיבוץ מחדש
+  G.avail=Object.fromEntries(Object.entries(G.availAll).filter(([e])=>!G.excluded.has(e)));
+  reScheduleAndRender();
+}
+function restoreEmp(emp){
+  G.excluded.delete(emp);
+  localStorage.setItem('excluded_'+TEAM_ID, JSON.stringify([...G.excluded]));
+  G.avail=Object.fromEntries(Object.entries(G.availAll).filter(([e])=>!G.excluded.has(e)));
+  reScheduleAndRender();
+}
+
 // ── Re-run scheduler and re-render (keeps dayMode) ───────────
 function reScheduleAndRender(){
   const{schedules,hours,nightH}=scheduleMulti(G.avail,G.prefs);
@@ -688,9 +710,10 @@ async function clearData(){
     await gasGet('clear');
     setStatus('<span class="s-empty">⬤ הנתונים נמחקו. מוכן לשבוע הבא.</span>');
     document.getElementById('output').innerHTML='';
-    G={schedules:null,avail:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,subs:[],
+    localStorage.removeItem('excluded_'+TEAM_ID);
+    G={schedules:null,avail:null,availAll:null,hours:null,nightH:null,iso:null,notes:[],prefs:{},dates:null,subs:[],
        dayMode:{נגבה:{},אשקלון:{}},sched12h:{נגבה:{},אשקלון:{}},editCtx:null,
-       activePos:new Set(['נגבה','אשקלון']),empPos:{},
+       activePos:new Set(['נגבה','אשקלון']),empPos:{},excluded:new Set(),
        empTarget:JSON.parse(localStorage.getItem('empTargets_'+TEAM_ID)||'{}')};
     // איפוס כפתורי עמדות
     POSITIONS.forEach(p=>{const btn=document.getElementById('tog-'+p);if(btn){const cls=p==='נגבה'?'p1':'p2';btn.className='pos-tog '+cls;btn.textContent=(p==='נגבה'?'🔵':'🟣')+' '+p+' — פעילה';}});
@@ -701,13 +724,17 @@ function setStatus(html){document.getElementById('status-bar').innerHTML=html;}
 // ── Render ────────────────────────────────────────────────────
 function renderSchedule(iso,messagesText,extraNotes,subs){
   const dates=getWeekDates(iso);
-  const avail=parseMessages(messagesText);
+  const availAll=parseMessages(messagesText);
   const prefs=parsePrefs(document.getElementById('prefs-txt').value);
-  G.empPos={}; // איפוס שיוך עמדות לעובדים בכל טעינה חדשה
-  // טען יעדי משמרות שמורים מ-localStorage
+  G.empPos={};
   G.empTarget=JSON.parse(localStorage.getItem('empTargets_'+TEAM_ID)||'{}');
+  // טען עובדים שהוסרו מה-localStorage
+  G.excluded=new Set(JSON.parse(localStorage.getItem('excluded_'+TEAM_ID)||'[]'));
+  // סנן עובדים שהוסרו מהזמינות
+  const avail=Object.fromEntries(Object.entries(availAll).filter(([e])=>!G.excluded.has(e)));
   const{schedules,hours,nightH}=scheduleMulti(avail,prefs);
-  G={...G,schedules,avail,hours,nightH,iso,notes:extraNotes,prefs,dates,subs:subs||[]};
+  // שמור availAll כדי להציג גם את המוסרים בטבלה
+  G={...G,schedules,avail,availAll,hours,nightH,iso,notes:extraNotes,prefs,dates,subs:subs||[]};
   renderOutput();
 }
 
@@ -796,11 +823,30 @@ function renderOutput(){
     </div>`;
     return`<tr>
       <td class="td-emp">
-        <div class="emp-nm">${emp}${isExc?' <span class="exc-badge">⚠️ חריג</span>':''}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="emp-nm">${emp}${isExc?' <span class="exc-badge">⚠️ חריג</span>':''}</div>
+          <button class="btn-exclude no-print" onclick="excludeEmp('${empEsc}')" title="הסר מהסידור השבוע">✕</button>
+        </div>
         <div class="emp-st">${progTxt} משמרות | ${(nightH[emp]||0)/8} 🌙</div>
         ${targetHTML}${posSelHTML}
       </td>${cells}</tr>`;
   }).join('');
+
+  // שורות עובדים שהוסרו (מוצגות אפורות עם כפתור שחזור)
+  const excludedRows=(G.excluded&&G.excluded.size>0)?
+    [...G.excluded].map(emp=>{
+      const empEsc=emp.replace(/'/g,"\\'");
+      const emptyCells=DAYS.map(()=>'<td class="td-av" style="opacity:.3">—</td>').join('');
+      return`<tr style="opacity:.5">
+        <td class="td-emp" style="background:#fef2f2">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="emp-nm" style="color:var(--red);text-decoration:line-through">${emp}</div>
+            <button class="btn-restore no-print" onclick="restoreEmp('${empEsc}')" title="שחזר לסידור">↩ שחזר</button>
+          </div>
+          <div class="emp-st" style="color:var(--red)">הוסר מהשבוע</div>
+        </td>${emptyCells}</tr>`;
+    }).join('')
+  :'';
 
   const bars=emps.map(emp=>{
     const n=nightH[emp]||0; const pct=maxN>0?Math.round((n/maxN)*36):0;
@@ -843,7 +889,7 @@ function renderOutput(){
     <!-- זמינות ואיזון -->
     <div class="sched-card mgr-only" id="av-card">
       <div class="card-title-bar av-bar"><h2>📊 זמינות עובדים</h2><span class="wk">שבוע: ${wLabel}</span></div>
-      <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${avRows}</tbody></table>
+      <table><thead><tr>${dayThsSimple}</tr></thead><tbody>${avRows}${excludedRows}</tbody></table>
       <div class="sec-title">🌙 איזון משמרות לילה:</div>
       <div class="bars-wrap">${bars}</div>
       ${notesHTML}
