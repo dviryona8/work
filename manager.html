@@ -443,18 +443,19 @@ function scheduleMulti(avail, prefs) {
     return choice === 'both' || choice === pos;
   }
 
-  for(const shift of['לילה','בוקר','צהריים']){
-    for(const[dayIdx,day]of DAYS.entries()){
+  // שיבוץ לפי יום — ממלאים כל יום במלואו לפני שעוברים ליום הבא
+  // כך צהריים מתחרה על עובדים לפני שהם נחסמים ע"י לילות של ימים אחרים
+  for(const[dayIdx,day]of DAYS.entries()){
+    for(const shift of['בוקר','צהריים','לילה']){
       for(const pos of POSITIONS){
-        if(!G.activePos.has(pos)) continue; // עמדה לא פעילה — דלג
-        // עובדים שכבר שובצו לאותה משמרת ואותו יום בעמדה אחרת
+        if(!G.activePos.has(pos)) continue;
         const takenSlot = new Set(POSITIONS.map(p=>schedules[p][day][shift]).filter(Boolean));
         const cands = Object.keys(avail)
           .filter(e=>
             (avail[e][day]||[]).includes(shift) &&
-            !violates24h(assigned[e],dayIdx,shift) && // בדיקת 24 שעות גלובלית
-            !takenSlot.has(e) && // לא ניתן לעבוד באותה משמרת בשתי עמדות
-            empAllowed(e, pos)   // עובד מורשה לעמדה זו
+            !violates24h(assigned[e],dayIdx,shift) &&
+            !takenSlot.has(e) &&
+            empAllowed(e, pos)
           )
           .sort((a,b2)=>score(a,shift)-score(b2,shift));
         if(cands.length){
